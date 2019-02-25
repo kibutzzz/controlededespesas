@@ -1,5 +1,6 @@
 package br.inf.safetech.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -70,16 +71,16 @@ public class ContaDespesa {
 		this.situacao = situacao;
 	}
 
-	public Calendar getDataInicio() {
-		return dataInicio;
+	public String getDataInicio() {
+		return  (new SimpleDateFormat("dd/MM/YYYY")).format(dataInicio.getTime());
 	}
 
 	public void setDataInicio(Calendar dataInicio) {
 		this.dataInicio = dataInicio;
 	}
 
-	public Calendar getDataFim() {
-		return dataFim;
+	public String getDataFim() {
+		return (new SimpleDateFormat("dd/MM/YYYY")).format(dataFim.getTime());
 	}
 
 	public void setDataFim(Calendar dataFim) {

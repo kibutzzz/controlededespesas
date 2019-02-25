@@ -1,8 +1,5 @@
 package br.inf.safetech.controllers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +153,7 @@ public class AdminController {
 	 */
 
 	@RequestMapping(value = "contas/cadastro", method = RequestMethod.POST)
-	public ModelAndView cadastroConta(String dataInicio, String usuarioId, String clienteId,
+	public ModelAndView cadastroConta(ContaDespesa conta,
 			RedirectAttributes redirectAttributes) {
 
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
@@ -165,28 +162,12 @@ public class AdminController {
 		
 		redirectAttributes.addFlashAttribute("statusCadastro", "Conta criada com sucesso");
 		
-		ContaDespesa conta = new ContaDespesa();
 		conta.setSituacao(SituacaoConta.ATIVA);
 		
-		clienteId = removerVirgula(clienteId);
-		usuarioId = removerVirgula(usuarioId);
-		dataInicio = removerVirgula(dataInicio);
-		
-		Calendar calDataInicio = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			calDataInicio.setTime(sdf.parse(dataInicio));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		conta.setDataInicio(calDataInicio);
-		conta.setCliente(clientesDao.buscarClientePorId(Integer.parseInt(clienteId)));
-		conta.setUsuario(usuarioDao.buscarUsuarioPorId(Integer.parseInt(usuarioId)));
-
 		contaDespesaDao.gravar(conta);
 		return modelAndView;
 	}
+
 
 	private String removerVirgula(String str) {
 		return org.apache.commons.lang3.StringUtils.removeStart(str, ",");

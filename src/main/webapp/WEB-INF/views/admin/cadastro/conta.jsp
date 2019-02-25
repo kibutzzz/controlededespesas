@@ -16,7 +16,7 @@
 	<form action="${s:mvcUrl('AC#cadastroConta').build() }" method="POST">
 		<div>
 			<label for="usuario">Usuario</label> <select id="usuario"
-				name="usuarioId">
+				name="usuario.id">
 				<c:forEach items="${colaboradoresDisponiveis}" var="colaborador">
 					<option value="${colaborador.id }">${colaborador.nome }</option>
 				</c:forEach>
@@ -26,7 +26,7 @@
 
 		<div>
 			<label for="cliente">Cliente</label> <select id="cliente"
-				name="clienteId">
+				name="cliente.id">
 				<c:forEach items="${clientesDisponiveis}" var="cliente">
 					<option value="${cliente.id }">${cliente.nome }</option>
 				</c:forEach>
