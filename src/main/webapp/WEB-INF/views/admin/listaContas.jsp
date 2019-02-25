@@ -20,7 +20,7 @@
 			<tr>
 				<td>Cliente</td>
 				<td>Colaborador</td>
-				<td>dataInicio</td>
+				<td>Data de Inicio</td>
 				<td>Situação</td>
 			</tr>
 		</thead>

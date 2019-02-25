@@ -1,5 +1,8 @@
 package br.inf.safetech.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import antlr.StringUtils;
 import br.inf.safetech.daos.ClienteDao;
 import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.UsuarioDAO;
@@ -150,6 +152,7 @@ public class AdminController {
 	 *                           informação de sucesso ou falha para a proxima
 	 *                           pagina
 	 * @return redireciona para a pagina de cadastro de contas
+	 *  
 	 */
 
 	@RequestMapping(value = "contas/cadastro", method = RequestMethod.POST)
@@ -159,17 +162,25 @@ public class AdminController {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
 //		TODO logica para verificar se o cadastro da conta foi efetuado com sucesso e retornar a situação ao usuario
+		
 		redirectAttributes.addFlashAttribute("statusCadastro", "Conta criada com sucesso");
+		
 		ContaDespesa conta = new ContaDespesa();
 		conta.setSituacao(SituacaoConta.ATIVA);
-		System.out.println(clienteId);
-		System.out.println(usuarioId);
+		
 		clienteId = removerVirgula(clienteId);
 		usuarioId = removerVirgula(usuarioId);
-
-		System.out.println(clienteId);
-		System.out.println(usuarioId);
+		dataInicio = removerVirgula(dataInicio);
 		
+		Calendar calDataInicio = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			calDataInicio.setTime(sdf.parse(dataInicio));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		conta.setDataInicio(calDataInicio);
 		conta.setCliente(clientesDao.buscarClientePorId(Integer.parseInt(clienteId)));
 		conta.setUsuario(usuarioDao.buscarUsuarioPorId(Integer.parseInt(usuarioId)));
 
