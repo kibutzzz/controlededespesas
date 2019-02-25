@@ -168,11 +168,6 @@ public class AdminController {
 		return modelAndView;
 	}
 
-
-	private String removerVirgula(String str) {
-		return org.apache.commons.lang3.StringUtils.removeStart(str, ",");
-	}
-
 	@ResponseBody
 	@RequestMapping("gerar-clientes")
 	public String gerarBaseFake() {
