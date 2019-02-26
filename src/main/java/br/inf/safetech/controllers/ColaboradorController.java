@@ -30,7 +30,8 @@ public class ColaboradorController {
 	@RequestMapping("")
 	public ModelAndView usuarioOverview() {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
-
+		
+		// TODO corrigir erro caso usuario não possua nenhuma conta cadastrada
 		Usuario usuario = usuarioDao.buscarUsuarioPorId(50);
 
 		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
@@ -43,9 +44,7 @@ public class ColaboradorController {
 
 		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
-		
-		
-		
+
 		modelAndView.addObject("conta", conta);
 
 		conta.getMovimentacoes().forEach((movimentacao) -> System.out.println(movimentacao.getValor()));
@@ -56,9 +55,8 @@ public class ColaboradorController {
 	@RequestMapping("movimentacao")
 	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
 
-		
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
-		
+
 		wrapper.getMovimentacao().setTipo(TipoMovimentacao.DEBITO);
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
 
