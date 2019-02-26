@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,6 +32,8 @@ public class AdminController {
 	private ContaDespesaDAO contaDespesaDao;
 	@Autowired
 	private ClienteDao clientesDao;
+	@Autowired
+	private ContaDespesaDAO contaDao;
 
 	@RequestMapping("")
 	public ModelAndView adminOverview() {
@@ -149,23 +152,33 @@ public class AdminController {
 	 *                           informação de sucesso ou falha para a proxima
 	 *                           pagina
 	 * @return redireciona para a pagina de cadastro de contas
-	 *  
+	 * 
 	 */
 
 	@RequestMapping(value = "contas/cadastro", method = RequestMethod.POST)
-	public ModelAndView cadastroConta(ContaDespesa conta,
-			RedirectAttributes redirectAttributes) {
+	public ModelAndView cadastroConta(ContaDespesa conta, RedirectAttributes redirectAttributes) {
 
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
 //		TODO logica para verificar se o cadastro da conta foi efetuado com sucesso e retornar a situação ao usuario
-		
+
 		redirectAttributes.addFlashAttribute("statusCadastro", "Conta criada com sucesso");
-		
+
 		conta.setSituacao(SituacaoConta.ATIVA);
-		
+
 		contaDespesaDao.gravar(conta);
 		return modelAndView;
+	}
+
+	//TODO passar id de outra maneira que o usuario não possa acessar contas de outros usuarios
+	@RequestMapping("contas/{id}")
+	public ModelAndView detalheConta(@PathVariable("id") Integer id) {
+
+		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
+		
+		modelAndView.addObject("conta", contaDao.buscarContaPeloId(id));
+		
+		return modelAndView;		
 	}
 
 	@ResponseBody
