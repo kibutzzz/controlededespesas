@@ -22,20 +22,20 @@ public class ContaDespesa {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_Sequence")
 	@SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ_CONTA_DESPESA")
 	private int id;
-	
+
 	@ManyToOne
 	private Usuario usuario;
-	
+
 	@ManyToOne
 	private Cliente cliente;
 	private SituacaoConta situacao;
-	
+
 	@DateTimeFormat
 	private Calendar dataInicio;
-	
+
 	@DateTimeFormat
 	private Calendar dataFim;
-	
+
 	@OneToMany
 	private List<Movimentacao> movimentacoes = new ArrayList<Movimentacao>();
 
@@ -72,7 +72,9 @@ public class ContaDespesa {
 	}
 
 	public String getDataInicio() {
-		return  (new SimpleDateFormat("dd/MM/YYYY")).format(dataInicio.getTime());
+		if (dataInicio == null)
+			return null;
+		return (new SimpleDateFormat("dd/MM/YYYY")).format(dataInicio.getTime());
 	}
 
 	public void setDataInicio(Calendar dataInicio) {
@@ -80,6 +82,9 @@ public class ContaDespesa {
 	}
 
 	public String getDataFim() {
+		if (dataFim == null)
+			return null;
+
 		return (new SimpleDateFormat("dd/MM/YYYY")).format(dataFim.getTime());
 	}
 
@@ -95,5 +100,8 @@ public class ContaDespesa {
 		this.movimentacoes = movimentacoes;
 	}
 
-	
+	public void adicionarMovimentacao(Movimentacao movimentacao) {
+		this.movimentacoes.add(movimentacao);		
+	}
+
 }
