@@ -1,27 +1,72 @@
 package br.inf.safetech.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import br.inf.safetech.daos.ContaDespesaDAO;
+import br.inf.safetech.daos.MovimentacaoDAO;
+import br.inf.safetech.daos.UsuarioDAO;
+import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
+import br.inf.safetech.model.ContaDespesa;
+import br.inf.safetech.model.EstadoConciliacao;
+import br.inf.safetech.model.Movimentacao;
+import br.inf.safetech.model.TipoMovimentacao;
+import br.inf.safetech.model.Usuario;
+
 @Controller
 @RequestMapping("/colaborador")
 public class ColaboradorController {
 
-	
+	@Autowired
+	private UsuarioDAO usuarioDao;
+	@Autowired
+	private ContaDespesaDAO contaDespesaDao;
+	@Autowired
+	private MovimentacaoDAO movimentacaoDao;
+
 	@RequestMapping("")
 	public ModelAndView usuarioOverview() {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
-//		TODO mostrar todas as contas do usuario 
-		
+
+		Usuario usuario = usuarioDao.buscarUsuarioPorId(50);
+
+		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
+
 		return modelAndView;
 	}
-	
+
 	@RequestMapping("conta/{id}")
 	public ModelAndView conta(@PathVariable("id") Integer id) {
-//		TODO mostrar detalhes da conta selecionada
+
+		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
 		
-		return null;
+		
+		
+		modelAndView.addObject("conta", conta);
+
+		conta.getMovimentacoes().forEach((movimentacao) -> System.out.println(movimentacao.getValor()));
+
+		return modelAndView;
+	}
+
+	@RequestMapping("movimentacao")
+	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
+
+		
+		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
+		
+		wrapper.getMovimentacao().setTipo(TipoMovimentacao.DEBITO);
+		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
+
+		movimentacaoDao.gravar(wrapper.getMovimentacao());
+
+		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
+		contaDespesaDao.mesclar(wrapper.getConta());
+
+		return new ModelAndView("redirect:./conta/" + wrapper.getConta().getId());
 	}
 }
