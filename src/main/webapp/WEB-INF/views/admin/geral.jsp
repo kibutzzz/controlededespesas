@@ -18,6 +18,9 @@
 	<a href="${s:mvcUrl('AC#formularioCadastroUsuario').build() }">cadastro de usuario</a>
 	<a href="${s:mvcUrl('CC#usuarioOverview').build() }">Área do Usuário</a>
 	<a href="${s:mvcUrl('AC#adminOverview').build() }">Área Administrativa</a>
+	<a href="${s:mvcUrl('AC#listarUsuarios').build() }">Usuarios cadastrados</a>
+	<a href="${s:mvcUrl('AC#listarContas').build() }">Contas Cadastradas</a>
+	
 	
 <!-- 	TODO desenvolver area administrativa  -->
 	
