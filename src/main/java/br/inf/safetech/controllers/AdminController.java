@@ -170,7 +170,7 @@ public class AdminController {
 		return modelAndView;
 	}
 
-	//TODO passar id de outra maneira que o usuario não possa acessar contas de outros usuarios
+	
 	@RequestMapping("contas/{id}")
 	public ModelAndView detalheConta(@PathVariable("id") Integer id) {
 
