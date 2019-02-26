@@ -1,5 +1,6 @@
 package br.inf.safetech.model;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -101,7 +102,24 @@ public class ContaDespesa {
 	}
 
 	public void adicionarMovimentacao(Movimentacao movimentacao) {
-		this.movimentacoes.add(movimentacao);		
+		this.movimentacoes.add(movimentacao);
+	}
+
+	public BigDecimal getSaldoDisponivel() {
+		BigDecimal total = new BigDecimal("0.00");
+		for (Movimentacao movimentacao : this.movimentacoes) {
+			System.out.print("Movimentação R$: " + movimentacao.getValor() + " tipo: " + movimentacao.getTipo());
+			if (movimentacao.getTipo() == TipoMovimentacao.CREDITO) {
+
+				total = total.add(movimentacao.getValor());
+			} else {
+				total = total.subtract(movimentacao.getValor());
+			}
+			System.out.println("total: " + total);
+		}
+		System.out.println(total);
+		return total;
+
 	}
 
 }
