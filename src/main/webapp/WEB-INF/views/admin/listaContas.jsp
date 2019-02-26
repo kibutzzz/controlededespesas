@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%-- <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%> --%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 
 <!DOCTYPE html>
 <html>
@@ -22,6 +22,7 @@
 				<td>Colaborador</td>
 				<td>Data de Inicio</td>
 				<td>Situação</td>
+				<td>detalhes</td>
 			</tr>
 		</thead>
 
@@ -32,6 +33,8 @@
 					<td>${conta.usuario.nome}</td>
 					<td>${conta.dataInicio}</td>
 					<td>${conta.situacao}</td>
+					<td><a href="${s:mvcUrl('AC#detalheConta').arg(0, conta.id).build() }">detalhes</a></td>
+								 
 				</tr>
 			</c:forEach>
 		</tbody>
