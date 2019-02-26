@@ -37,6 +37,28 @@
 	</table>
 
 	<h1>Movimentações</h1>
+	<form action="${s:mvcUrl('AC#cadastrarMovimentacao').build() }"
+		method="post"}>
+		<div>
+			<label for="descricao">Descricao</label> <input type="text"
+				id="descricao" name="movimentacao.descricao" required />
+		</div>
+		<div>
+			<label for="valor">Valor</label> <input type="text" id="valor"
+				name="movimentacao.valor" required />
+		</div>
+		<div>
+			<label for="tipo">Tipo</label> <select id="tipo" name="movimentacao.tipo">
+				<c:forEach items="${tipos }" var="tipo">
+				<option value="${tipo }">${tipo }</option>
+				</c:forEach>
+			</select>
+		</div>
+		<input type="hidden" name="conta.id" value="${conta.id }" />
+
+		<button type="submit">Cadastrar Movimentacao</button>
+
+	</form>
 	<table>
 		<thead>
 			<tr>
@@ -58,6 +80,12 @@
 			</c:forEach>
 
 		</tbody>
+		
+		<tfoot>
+			<tr>
+				<td colspan="2">total</td><td>${conta.saldoDisponivel }</td>
+			</tr>
+		</tfoot>
 	</table>
 
 
