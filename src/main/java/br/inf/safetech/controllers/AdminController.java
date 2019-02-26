@@ -13,12 +13,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.inf.safetech.daos.ClienteDao;
 import br.inf.safetech.daos.ContaDespesaDAO;
+import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
+import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.helper.GeradorDeDados;
 import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
+import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.SituacaoConta;
 import br.inf.safetech.model.SituacaoUsuario;
+import br.inf.safetech.model.TipoMovimentacao;
 import br.inf.safetech.model.TipoUsuario;
 import br.inf.safetech.model.Usuario;
 
@@ -34,6 +38,8 @@ public class AdminController {
 	private ClienteDao clientesDao;
 	@Autowired
 	private ContaDespesaDAO contaDao;
+	@Autowired
+	private MovimentacaoDAO movimentacaoDao;
 
 	@RequestMapping("")
 	public ModelAndView adminOverview() {
@@ -177,8 +183,24 @@ public class AdminController {
 		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
 		
 		modelAndView.addObject("conta", contaDao.buscarContaPeloId(id));
+		modelAndView.addObject("tipos", TipoMovimentacao.values());
 		
 		return modelAndView;		
+	}
+	
+	@RequestMapping("movimentacao")
+	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
+		
+		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
+		
+		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
+
+		movimentacaoDao.gravar(wrapper.getMovimentacao());
+
+		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
+		contaDespesaDao.mesclar(wrapper.getConta());
+
+		return new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
 	}
 
 	@ResponseBody
