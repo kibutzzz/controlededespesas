@@ -38,19 +38,20 @@
 	</table>
 
 	<h1>Movimentações</h1>
-	<form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }" method="post" }>
+	<form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
+		method="post"}>
 		<div>
-			<label for="descricao">Descricao</label> <input type="text" id="descricao"
-				name="movimentacao.descricao" required />
+			<label for="descricao">Descricao</label> <input type="text"
+				id="descricao" name="movimentacao.descricao" required />
 		</div>
 		<div>
 			<label for="valor">Valor</label> <input type="text" id="valor"
 				name="movimentacao.valor" required />
 		</div>
-		<input type="hidden" name="conta.id" value="${conta.id }"/>
-		
+		<input type="hidden" name="conta.id" value="${conta.id }" />
+
 		<button type="submit">Cadastrar Movimentacao</button>
-		
+
 	</form>
 	<table>
 		<thead>
@@ -59,27 +60,40 @@
 				<td>Descrição</td>
 				<td>Valor</td>
 				<td>Conciliada</td>
-				
-
+				<td>Editar</td>
+				<td>Excluir</td>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach items="${conta.movimentacoes }" var="movimentacao">
 				<tr>
-					<td>${movimentacao.tipo }</td>
-					<td>${movimentacao.descricao }</td>
-					<td>${movimentacao.valor}</td>
+					<form action="${s:mvcUrl('CC#editarMovimentacao').build() }"
+						method="POST">
+						<input type="hidden" name="movimentacao.id"
+							value="${movimentacao.id }">
+						<td>${movimentacao.tipo }</td>
+					<td><input type="text" name="movimentacao.descricao"
+						value="${movimentacao.descricao }" /></td>
+					<td><input type="text" name="movimentacao.valor"
+						value="${movimentacao.valor }" /></td>
 					<td>${movimentacao.conciliada }</td>
+					<input type="hidden" name="contaId" value="${conta.id }" />
+					<td><button type="submit">Editar</button></td>
+					</form>
+					<td><form action="" method="POST">
+							<button type="submit">Excluir</button>
+						</form></td>
 				</tr>
 			</c:forEach>
 		</tbody>
+
+		<tfoot>
+			<tr>
+				<td colspan="2">total</td>
+				<td>${conta.saldoDisponivel }</td>
+			</tr>
+		</tfoot>
 	</table>
-	<!-- 	TODO formulario de cadastro de movimentação -->
-
-
-	<!-- 	TODO mostrar todos as movimentações ja cadastradas -->
-
-
 
 </body>
 </html>
