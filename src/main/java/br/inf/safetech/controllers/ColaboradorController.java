@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
+import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.Movimentacao;
@@ -30,7 +32,7 @@ public class ColaboradorController {
 	@RequestMapping("")
 	public ModelAndView usuarioOverview() {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
-		
+
 		// TODO corrigir erro caso usuario não possua nenhuma conta cadastrada
 		Usuario usuario = usuarioDao.buscarUsuarioPorId(50);
 
@@ -47,7 +49,7 @@ public class ColaboradorController {
 
 		modelAndView.addObject("conta", conta);
 
-		conta.getMovimentacoes().forEach((movimentacao) -> System.out.println(movimentacao.getValor()));
+//		conta.getMovimentacoes().forEach((movimentacao) -> System.out.println(movimentacao.getValor()));
 
 		return modelAndView;
 	}
@@ -67,4 +69,19 @@ public class ColaboradorController {
 
 		return new ModelAndView("redirect:./conta/" + wrapper.getConta().getId());
 	}
+
+	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
+	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+
+		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+		
+		movimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
+		movimentacao.setValor(wrapper.getMovimentacao().getValor());
+				
+		movimentacaoDao.mesclar(movimentacao);
+		
+		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
+	}
+	
+	
 }
