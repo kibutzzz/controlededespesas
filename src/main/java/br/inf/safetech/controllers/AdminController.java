@@ -16,7 +16,9 @@ import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
+import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
 import br.inf.safetech.helper.GeradorDeDados;
+import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
@@ -176,24 +178,26 @@ public class AdminController {
 		return modelAndView;
 	}
 
-	
 	@RequestMapping("contas/{id}")
 	public ModelAndView detalheConta(@PathVariable("id") Integer id) {
 
 		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
-		
+
 		modelAndView.addObject("conta", contaDao.buscarContaPeloId(id));
 		modelAndView.addObject("tipos", TipoMovimentacao.values());
-		
-		return modelAndView;		
+		modelAndView.addObject("categorias", CategoriaMovimentacao.values());
+		modelAndView.addObject("conciliacao", EstadoConciliacao.values());
+
+		return modelAndView;
 	}
-	
+
 	@RequestMapping("movimentacao")
 	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
-		
+
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
-		
+
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
+		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
@@ -201,6 +205,15 @@ public class AdminController {
 		contaDespesaDao.mesclar(wrapper.getConta());
 
 		return new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
+	}
+
+	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
+	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+		System.out.println(wrapper.getContaId());
+
+		movimentacaoDao.mesclar(wrapper.getMovimentacao());
+
+		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 	}
 
 	@ResponseBody
