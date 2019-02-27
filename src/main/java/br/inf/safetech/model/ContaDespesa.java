@@ -108,16 +108,12 @@ public class ContaDespesa {
 	public BigDecimal getSaldoDisponivel() {
 		BigDecimal total = new BigDecimal("0.00");
 		for (Movimentacao movimentacao : this.movimentacoes) {
-			System.out.print("Movimentação R$: " + movimentacao.getValor() + " tipo: " + movimentacao.getTipo());
 			if (movimentacao.getTipo() == TipoMovimentacao.CREDITO) {
-
 				total = total.add(movimentacao.getValor());
 			} else {
 				total = total.subtract(movimentacao.getValor());
 			}
-			System.out.println("total: " + total);
 		}
-		System.out.println(total);
 		return total;
 
 	}
