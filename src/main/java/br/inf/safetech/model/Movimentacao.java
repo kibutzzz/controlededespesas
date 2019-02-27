@@ -21,7 +21,18 @@ public class Movimentacao {
 	private EstadoConciliacao conciliada;
 	private BigDecimal valor;
 	private String descricao;
+	private CategoriaMovimentacao categoria;
 	
+	//TODO adicionar atributo enum que contem informação sobre quem cadastrou a movimentação (ADMIN/COLABORADOR)
+	
+	public CategoriaMovimentacao getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(CategoriaMovimentacao categoria) {
+		this.categoria = categoria;
+	}
+
 	public TipoMovimentacao getTipo() {
 		return tipo;
 	}
