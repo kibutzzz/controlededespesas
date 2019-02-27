@@ -14,8 +14,17 @@ public class MovimentacaoDAO {
 
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	public void gravar(Movimentacao movimentacao) {
 		manager.persist(movimentacao);
+	}
+
+	public void mesclar(Movimentacao movimentacao) {
+		manager.merge(movimentacao);
+	}
+
+	public Movimentacao buscarMovimentacaoPorId(int id) {
+		return manager.createQuery("select m from Movimentacao m where m.id = :pId", Movimentacao.class)
+				.setParameter("pId", id).getSingleResult();
 	}
 }
