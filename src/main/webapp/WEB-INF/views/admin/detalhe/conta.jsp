@@ -48,9 +48,10 @@
 				name="movimentacao.valor" required />
 		</div>
 		<div>
-			<label for="tipo">Tipo</label> <select id="tipo" name="movimentacao.tipo">
+			<label for="tipo">Tipo</label> <select id="tipo"
+				name="movimentacao.tipo">
 				<c:forEach items="${tipos }" var="tipo">
-				<option value="${tipo }">${tipo }</option>
+					<option value="${tipo }">${tipo }</option>
 				</c:forEach>
 			</select>
 		</div>
@@ -66,24 +67,67 @@
 				<td>Descrição</td>
 				<td>Valor</td>
 				<td>Conciliada</td>
+				<td>Categoria</td>
 
+				<td>Editar</td>
+				<td>Excluir</td>
 			</tr>
 		</thead>
 		<tbody>
 			<c:forEach items="${conta.movimentacoes }" var="movimentacao">
 				<tr>
-					<td>${movimentacao.tipo }</td>
-					<td>${movimentacao.descricao }</td>
-					<td>${movimentacao.valor}</td>
-					<td>${movimentacao.conciliada }</td>
+					<form action="${s:mvcUrl('AC#editarMovimentacao').build() }"
+						method="POST">
+						<input type="hidden" name="movimentacao.id"
+							value="${movimentacao.id }">
+						<td><select name="movimentacao.tipo">
+								<c:forEach items="${tipos }" var="tipo">
+									<option value="${tipo }"
+										<c:if test="${ tipo == movimentacao.tipo }">
+										selected 
+										</c:if>>${tipo }</option>
+								</c:forEach>
+
+						</select></td>
+						<td><input name="movimentacao.descricao" type="text"
+							value="${movimentacao.descricao }" /></td>
+						<td><input name="movimentacao.valor" type="text"
+							value="${movimentacao.valor}" /></td>
+
+						<td><select name="movimentacao.conciliada">
+								<c:forEach items="${conciliacao }" var="conciliada">
+									<option value="${conciliada }"
+										<c:if test="${ conciliada == movimentacao.conciliada }">
+										selected 
+										</c:if>>${conciliada }</option>
+								</c:forEach>
+
+						</select></td>
+						<td><select name="movimentacao.categoria">
+								<c:forEach items="${categorias }" var="categoria">
+									<option value="${categoria }"
+										<c:if test="${ categoria == movimentacao.categoria }">
+										selected 
+										</c:if>>${categoria }</option>
+								</c:forEach>
+
+						</select></td> <input type="hidden" name="contaId" value="${conta.id }" />
+
+						<td><button type="submit">Editar</button></td>
+					</form>
+					<td><form action="" method="POST">
+							<button type="submit">Excluir</button>
+						</form></td>
+
 				</tr>
 			</c:forEach>
 
 		</tbody>
-		
+
 		<tfoot>
 			<tr>
-				<td colspan="2">total</td><td>${conta.saldoDisponivel }</td>
+				<td colspan="2">total</td>
+				<td>${conta.saldoDisponivel }</td>
 			</tr>
 		</tfoot>
 	</table>
