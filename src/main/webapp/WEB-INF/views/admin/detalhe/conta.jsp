@@ -118,6 +118,7 @@
 					<td><form action="" method="POST">
 							<button type="submit">Excluir</button>
 						</form></td>
+					<!-- TODO Permitir somente alterações de mov. não conciliadas -->
 
 				</tr>
 			</c:forEach>

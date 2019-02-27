@@ -83,6 +83,9 @@
 					<td><form action="" method="POST">
 							<button type="submit">Excluir</button>
 						</form></td>
+
+					<!-- TODO Permitir que o Colaborador só possa editar ou excluir movimentações não conciliadas -->
+					<!-- TODO permitir que o Colaborador só possa editar ou excluir movimentações criadas por ele -->
 				</tr>
 			</c:forEach>
 		</tbody>

@@ -41,6 +41,8 @@ public class ColaboradorController {
 		return modelAndView;
 	}
 
+	//TODO permitir que o usuario só possa acessar contas vinculadas a ele
+	
 	@RequestMapping("conta/{id}")
 	public ModelAndView conta(@PathVariable("id") Integer id) {
 
