@@ -16,6 +16,7 @@ import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.Movimentacao;
 import br.inf.safetech.model.TipoMovimentacao;
+import br.inf.safetech.model.TipoUsuario;
 import br.inf.safetech.model.Usuario;
 
 @Controller
@@ -63,7 +64,8 @@ public class ColaboradorController {
 
 		wrapper.getMovimentacao().setTipo(TipoMovimentacao.DEBITO);
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
-
+		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.COLABORADOR);
+		
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
 		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
