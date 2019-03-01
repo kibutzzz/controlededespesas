@@ -6,6 +6,7 @@ public class ServletSpringMVC extends AbstractAnnotationConfigDispatcherServletI
 
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
+//		TODO implementar autorização e autenticação com springSecurity
 		return null;
 	}
 
