@@ -72,15 +72,19 @@
 						<input type="hidden" name="movimentacao.id"
 							value="${movimentacao.id }">
 						<td>${movimentacao.tipo }</td>
-					<td><input type="text" name="movimentacao.descricao"
-						value="${movimentacao.descricao }" /></td>
-					<td><input type="text" name="movimentacao.valor"
-						value="${movimentacao.valor }" /></td>
-					<td>${movimentacao.conciliada }</td>
-					<input type="hidden" name="contaId" value="${conta.id }" />
-					<td><button type="submit">Editar</button></td>
+						<td><input type="text" name="movimentacao.descricao"
+							value="${movimentacao.descricao }" /></td>
+						<td><input type="text" name="movimentacao.valor"
+							value="${movimentacao.valor }" /></td>
+						<td>${movimentacao.conciliada }</td> <input type="hidden"
+							name="contaId" value="${conta.id }" />
+						<td><button type="submit">Editar</button></td>
 					</form>
-					<td><form action="" method="POST">
+					<td><form
+							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
+							method="POST">
+							<input type="hidden" name="contaId" value="${conta.id }" /> 
+							<input type="hidden" name="movimentacao.id" value="${movimentacao.id }">
 							<button type="submit">Excluir</button>
 						</form></td>
 
