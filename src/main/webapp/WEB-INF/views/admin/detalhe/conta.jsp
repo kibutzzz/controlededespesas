@@ -113,12 +113,20 @@
 
 						</select></td> <input type="hidden" name="contaId" value="${conta.id }" />
 
-						<td><button type="submit">Editar</button></td>
+						<td><button
+								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
+								type="submit">Editar</button></td>
 					</form>
-					<td><form action="" method="POST">
-							<button type="submit">Excluir</button>
+					<td><form
+							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
+							method="POST">
+							<input type="hidden" name="contaId" value="${conta.id }" /> <input
+								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
+							<button
+								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
+								type="submit">Excluir</button>
 						</form></td>
-					<!-- TODO Permitir somente alterações de mov. não conciliadas -->
+
 
 				</tr>
 			</c:forEach>
