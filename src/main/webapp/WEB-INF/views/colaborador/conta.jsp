@@ -78,17 +78,21 @@
 							value="${movimentacao.valor }" /></td>
 						<td>${movimentacao.conciliada }</td> <input type="hidden"
 							name="contaId" value="${conta.id }" />
-						<td><button type="submit">Editar</button></td>
+						<td><button type="submit"
+								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
+											|| movimentacao.cadastradoPor == 'ADMIN' }">disabled</c:if>>Editar</button></td>
 					</form>
 					<td><form
 							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
 							method="POST">
-							<input type="hidden" name="contaId" value="${conta.id }" /> 
-							<input type="hidden" name="movimentacao.id" value="${movimentacao.id }">
-							<button type="submit">Excluir</button>
+							<input type="hidden" name="contaId" value="${conta.id }" /> <input
+								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
+							<button
+								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
+											|| movimentacao.cadastradoPor == 'ADMIN'}">disabled</c:if>
+								type="submit">Excluir</button>
 						</form></td>
 
-					<!-- TODO Permitir que o Colaborador só possa editar ou excluir movimentações não conciliadas -->
 					<!-- TODO permitir que o Colaborador só possa editar ou excluir movimentações criadas por ele -->
 				</tr>
 			</c:forEach>
