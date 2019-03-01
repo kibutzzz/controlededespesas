@@ -22,6 +22,7 @@ import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
+import br.inf.safetech.model.Movimentacao;
 import br.inf.safetech.model.SituacaoConta;
 import br.inf.safetech.model.SituacaoUsuario;
 import br.inf.safetech.model.TipoMovimentacao;
@@ -198,6 +199,8 @@ public class AdminController {
 
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
+		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
+
 
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
@@ -214,6 +217,19 @@ public class AdminController {
 		movimentacaoDao.mesclar(wrapper.getMovimentacao());
 
 		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+	}
+	
+	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
+	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
+		
+		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+		
+		conta.removerMovimentacao(movimentacao);		
+		contaDespesaDao.mesclar(conta);
+		
+		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
 
 	@ResponseBody
