@@ -13,7 +13,6 @@
 
 	<h1>Conta ${conta.cliente.nome }</h1>
 
-
 	<table>
 		<thead>
 			<tr>
@@ -38,21 +37,23 @@
 	</table>
 
 	<h1>Movimentações</h1>
-	<form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
-		method="post"}>
-		<div>
-			<label for="descricao">Descricao</label> <input type="text"
-				id="descricao" name="movimentacao.descricao" required />
-		</div>
-		<div>
-			<label for="valor">Valor</label> <input type="text" id="valor"
-				name="movimentacao.valor" required />
-		</div>
-		<input type="hidden" name="conta.id" value="${conta.id }" />
+	<c:if test="${conta.situacao == 'ATIVA' }">
+		<form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
+			method="post"}>
+			<div>
+				<label for="descricao">Descricao</label> <input type="text"
+					id="descricao" name="movimentacao.descricao" required />
+			</div>
+			<div>
+				<label for="valor">Valor</label> <input type="text" id="valor"
+					name="movimentacao.valor" required />
+			</div>
+			<input type="hidden" name="conta.id" value="${conta.id }" />
 
-		<button type="submit">Cadastrar Movimentacao</button>
+			<button type="submit">Cadastrar Movimentacao</button>
 
-	</form>
+		</form>
+	</c:if>
 	<table>
 		<thead>
 			<tr>
@@ -78,9 +79,14 @@
 							value="${movimentacao.valor }" /></td>
 						<td>${movimentacao.conciliada }</td> <input type="hidden"
 							name="contaId" value="${conta.id }" />
+							
+							<!-- TODO impolementar metodo para verificar se a movimentação pode ser editada
+									separado da view -->
 						<td><button type="submit"
+						
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
-											|| movimentacao.cadastradoPor == 'ADMIN' }">disabled</c:if>>Editar</button></td>
+											|| movimentacao.cadastradoPor == 'ADMIN'
+											|| conta.situacao == 'INATIVA'}">disabled</c:if>>Editar</button></td>
 					</form>
 					<td><form
 							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
@@ -89,11 +95,11 @@
 								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
 							<button
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
-											|| movimentacao.cadastradoPor == 'ADMIN'}">disabled</c:if>
+											|| movimentacao.cadastradoPor == 'ADMIN'
+											|| conta.situacao == 'INATIVA'}">disabled</c:if>
 								type="submit">Excluir</button>
 						</form></td>
 
-					<!-- TODO permitir que o Colaborador só possa editar ou excluir movimentações criadas por ele -->
 				</tr>
 			</c:forEach>
 		</tbody>
