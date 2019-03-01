@@ -41,8 +41,8 @@ public class ColaboradorController {
 		return modelAndView;
 	}
 
-	//TODO permitir que o usuario só possa acessar contas vinculadas a ele
-	
+	// TODO permitir que o usuario só possa acessar contas vinculadas a ele
+
 	@RequestMapping("conta/{id}")
 	public ModelAndView conta(@PathVariable("id") Integer id) {
 
@@ -76,14 +76,26 @@ public class ColaboradorController {
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
-		
+
 		movimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
 		movimentacao.setValor(wrapper.getMovimentacao().getValor());
-				
+
 		movimentacaoDao.mesclar(movimentacao);
+
+		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
+	}
+
+	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
+	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
+		
+		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+		
+		conta.removerMovimentacao(movimentacao);		
+		contaDespesaDao.mesclar(conta);
 		
 		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
-	
-	
+
 }
