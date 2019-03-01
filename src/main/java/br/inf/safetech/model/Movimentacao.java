@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
-
 @Entity
 public class Movimentacao {
 
@@ -16,15 +15,22 @@ public class Movimentacao {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "id_Sequence")
 	@SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ_MOVIMENTACAO")
 	private int id;
-	
+
 	private TipoMovimentacao tipo;
 	private EstadoConciliacao conciliada;
 	private BigDecimal valor;
 	private String descricao;
 	private CategoriaMovimentacao categoria;
-	
-	//TODO adicionar atributo enum que contem informação sobre quem cadastrou a movimentação (ADMIN/COLABORADOR)
-	
+	private TipoUsuario cadastradoPor;
+
+	public TipoUsuario getCadastradoPor() {
+		return cadastradoPor;
+	}
+
+	public void setCadastradoPor(TipoUsuario cadastradoPor) {
+		this.cadastradoPor = cadastradoPor;
+	}
+
 	public CategoriaMovimentacao getCategoria() {
 		return categoria;
 	}
