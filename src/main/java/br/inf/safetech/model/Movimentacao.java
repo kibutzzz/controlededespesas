@@ -79,4 +79,11 @@ public class Movimentacao {
 		this.descricao = descricao;
 	}
 
+	public boolean estaConciliada() {
+		if (this.conciliada.equals(EstadoConciliacao.CONCILIADA)) {
+			return true;
+		}
+		return false;
+	}
+
 }
