@@ -1,5 +1,6 @@
 package br.inf.safetech.controllers;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,7 @@ public class AdminController {
 	private ContaDespesaDAO contaDespesaDao;
 	@Autowired
 	private ClienteDao clientesDao;
-	@Autowired
-	private ContaDespesaDAO contaDao;
+
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
 
@@ -120,7 +120,7 @@ public class AdminController {
 	@RequestMapping("contas")
 	public ModelAndView listarContas() {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
-		//TODO Checar a se a data esta voltando corretamente
+		// TODO Checar a se a data esta voltando corretamente
 		List<ContaDespesa> contas = contaDespesaDao.listar();
 
 		modelAndView.addObject("contas", contas);
@@ -184,7 +184,7 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
 
-		modelAndView.addObject("conta", contaDao.buscarContaPeloId(id));
+		modelAndView.addObject("conta", contaDespesaDao.buscarContaPeloId(id));
 		modelAndView.addObject("tipos", TipoMovimentacao.values());
 		modelAndView.addObject("categorias", CategoriaMovimentacao.values());
 		modelAndView.addObject("conciliacao", EstadoConciliacao.values());
@@ -201,7 +201,6 @@ public class AdminController {
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
-
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
 		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
@@ -213,24 +212,39 @@ public class AdminController {
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 		System.out.println(wrapper.getContaId());
+		
+//		TODO não permitir conciliação de conta caso a categoria seja INDEFINIDO
 
 		movimentacaoDao.mesclar(wrapper.getMovimentacao());
 
 		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 	}
-	
+
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
-		
+
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
-		
-		conta.removerMovimentacao(movimentacao);		
+
+		conta.removerMovimentacao(movimentacao);
 		contaDespesaDao.mesclar(conta);
-		
+
 		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
+
+	@RequestMapping("contas/fechar")
+	public ModelAndView encerrarConta(ContaDespesa conta) {
+
+		conta = contaDespesaDao.buscarContaPeloId(conta.getId());
+		conta.setDataFim(Calendar.getInstance());
+		conta.setSituacao(SituacaoConta.INATIVA);
+		contaDespesaDao.mesclar(conta);
+
+		return new ModelAndView("redirect:../.");
+	}
+	
+	
 
 	@ResponseBody
 	@RequestMapping("gerar-clientes")
