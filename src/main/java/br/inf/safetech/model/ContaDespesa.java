@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -103,6 +105,11 @@ public class ContaDespesa {
 
 	public void adicionarMovimentacao(Movimentacao movimentacao) {
 		this.movimentacoes.add(movimentacao);
+	}
+
+	public void removerMovimentacao(Movimentacao movimentacao) {
+		this.movimentacoes = this.movimentacoes.stream().filter(m -> m.getId() != movimentacao.getId())
+				.collect(Collectors.toList());
 	}
 
 	public BigDecimal getSaldoDisponivel() {
