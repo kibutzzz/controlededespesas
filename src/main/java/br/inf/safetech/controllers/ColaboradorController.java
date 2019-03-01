@@ -34,7 +34,6 @@ public class ColaboradorController {
 	public ModelAndView usuarioOverview() {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
 
-		// TODO corrigir erro caso usuario não possua nenhuma conta cadastrada
 		Usuario usuario = usuarioDao.buscarUsuarioPorId(50);
 
 		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));

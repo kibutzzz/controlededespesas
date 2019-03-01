@@ -125,4 +125,13 @@ public class ContaDespesa {
 
 	}
 
+	public boolean getMovimentacoesEstaoConciliadas() {
+		for (Movimentacao movimentacao : this.movimentacoes) {
+			if (!movimentacao.estaConciliada()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
