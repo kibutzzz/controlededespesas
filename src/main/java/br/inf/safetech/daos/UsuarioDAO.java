@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +16,14 @@ import br.inf.safetech.model.Usuario;
 
 @Repository
 @Transactional
-public class UsuarioDAO {
+public class UsuarioDAO implements UserDetailsService {
 
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	/**
-	 *	metodo auxiliar para dev
+	 * metodo auxiliar para dev
+	 * 
 	 * @param usuarios
 	 */
 	public void gravar(List<Usuario> usuarios) {
@@ -33,7 +36,7 @@ public class UsuarioDAO {
 	}
 
 	public List<Usuario> listar() {
-		
+
 		return manager.createQuery("select u from Usuario u", Usuario.class).getResultList();
 	}
 
@@ -47,10 +50,26 @@ public class UsuarioDAO {
 	}
 
 	public Usuario buscarUsuarioPorId(Integer usuarioId) {
-		
-		return manager
-				.createQuery("select u from Usuario u where u.id = :pId", Usuario.class)
+
+		return manager.createQuery("select u from Usuario u where u.id = :pId", Usuario.class)
 				.setParameter("pId", usuarioId).getSingleResult();
 	}
+	@Override
+	public Usuario loadUserByUsername(String login) {
+		List<Usuario> usuarios = manager.createQuery("select u from Usuario u where u.login = :pLogin", Usuario.class)
+				.setParameter("pLogin", login).getResultList();
+		
+		if(usuarios.isEmpty()) {
+			throw new UsernameNotFoundException("Usuario não encontrado");
+		}
+		
+		return usuarios.get(0);
+	}
+
+	
+	
+	
+	
+	
 
 }
