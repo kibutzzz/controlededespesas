@@ -22,21 +22,44 @@ public class ContaDespesaDAO {
 		manager.persist(conta);
 	}
 
+	/**
+	 * busca todas as contas cadastradas no banco
+	 * 
+	 * @return lista com todas as contas cadastradas
+	 */
 	public List<ContaDespesa> listar() {
 		return manager.createQuery("select c from ContaDespesa c", ContaDespesa.class).getResultList();
 	}
 
+	/**
+	 * busca uma conta especifica pelo id
+	 * 
+	 * @param id
+	 * @return a conta com o id passado
+	 */
 	public ContaDespesa buscarContaPeloId(Integer id) {
 
-		return manager.createQuery("select c from ContaDespesa c left join fetch c.movimentacoes where c.id = :pId", ContaDespesa.class)
-				.setParameter("pId", id).getSingleResult();
+		return manager.createQuery("select c from ContaDespesa c left join fetch c.movimentacoes where c.id = :pId",
+				ContaDespesa.class).setParameter("pId", id).getSingleResult();
 	}
 
+	
+	/**
+	 * busca todas as conta associadas ao usuario passado como argumento
+	 * 
+	 * @param usuario 
+	 * @return lista de contas associada ao usuario
+	 */
 	public List<ContaDespesa> listarContaPorUsuario(Usuario usuario) {
 		return manager.createQuery("select c from ContaDespesa c where c.usuario = :pUsuario", ContaDespesa.class)
 				.setParameter("pUsuario", usuario).getResultList();
 	}
-	
+
+	/**
+	 * atualiza a conta que for passada como argumento
+	 * 
+	 * @param conta
+	 */
 	public void mesclar(ContaDespesa conta) {
 		manager.merge(conta);
 	}

@@ -21,10 +21,21 @@ public class ClienteDAO {
 		clientes.forEach((cliente) -> manager.persist(cliente));
 	}
 
+	/**
+	 * retorna lista com todos os clientes cadastrados na base de dados
+	 * 
+	 * @return lista de clientes
+	 */
 	public List<Cliente> listar() {
 		return manager.createQuery("select c from Cliente c", Cliente.class).getResultList();
 	}
 
+	/**
+	 * retorna um cliente especificado pelo id se ele existir
+	 * 
+	 * @param clienteId
+	 * @return Cliente 
+	 */
 	public Cliente buscarClientePorId(Integer clienteId) {
 
 		return manager.createQuery("select c from Cliente c where c.id = :pId", Cliente.class)
