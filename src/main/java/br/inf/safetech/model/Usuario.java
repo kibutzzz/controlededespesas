@@ -1,15 +1,13 @@
 package br.inf.safetech.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -29,9 +27,6 @@ public class Usuario implements UserDetails {
 	private String senha;
 	private TipoUsuario tipo;
 	private SituacaoUsuario situacao;
-
-	@ManyToMany(fetch=FetchType.EAGER)
-	private List<Role> roles = new ArrayList<Role>();
 
 	public int getId() {
 		return id;
@@ -81,20 +76,11 @@ public class Usuario implements UserDetails {
 		this.situacao = situacao;
 	}
 
-	
-
-	public List<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
-	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-				
-		return this.roles;
+		Set<TipoUsuario> collection = new HashSet<TipoUsuario>();
+		collection.add(this.tipo);
+		return collection;
 	}
 
 	@Override
@@ -109,7 +95,7 @@ public class Usuario implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true ;
+		return true;
 	}
 
 	@Override
@@ -127,11 +113,5 @@ public class Usuario implements UserDetails {
 		return this.situacao == SituacaoUsuario.ATIVO;
 	}
 
-//	@Override
-//	public String toString() {
-//		return "Usuario [id=" + id + ", nome=" + nome + ", login=" + login + ", senha=" + senha + ", tipo=" + tipo
-//				+ ", situacao=" + situacao + "]";
-//	}
-//	
 
 }
