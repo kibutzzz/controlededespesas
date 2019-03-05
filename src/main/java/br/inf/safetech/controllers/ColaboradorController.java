@@ -42,7 +42,16 @@ public class ColaboradorController {
 	}
 
 	// TODO permitir que o usuario só possa acessar contas vinculadas a ele
-
+	/**
+	 * metodo que busca as informações da conta selecionada
+	 * 
+	 * deve permitir acesso somente se o usuario logado for o mesmo usuario da conta
+	 * 
+	 * ver: https://www.baeldung.com/get-user-in-spring-security
+	 * 
+	 * @param id
+	 * @return
+	 */
 	@RequestMapping("conta/{id}")
 	public ModelAndView conta(@PathVariable("id") Integer id) {
 
@@ -51,20 +60,26 @@ public class ColaboradorController {
 
 		modelAndView.addObject("conta", conta);
 
-//		conta.getMovimentacoes().forEach((movimentacao) -> System.out.println(movimentacao.getValor()));
-
 		return modelAndView;
 	}
 
+	/**
+	 * metodo de cadastro de movimentação
+	 * 
+	 * 
+	 * @param wrapper parametro que possui os dados da conta e da movimentação
+	 * @return redireciona para a pagina de detalhes da conta atual
+	 */
 	@RequestMapping("movimentacao")
 	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
 
+//		TODO validar os dados da movimentação
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
 
 		wrapper.getMovimentacao().setTipo(TipoMovimentacao.DEBITO);
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.COLABORADOR);
-		
+
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
 		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
@@ -73,9 +88,16 @@ public class ColaboradorController {
 		return new ModelAndView("redirect:./conta/" + wrapper.getConta().getId());
 	}
 
+	/**
+	 * metodo de edição de conta
+	 * 
+	 * @param wrapper parametro que possui os dados da conta e da movimentação
+	 * @return redireciona para a pagina de detalhes da conta atual
+	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 
+//		TODO Validar os dados antes de editar
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
 		movimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
@@ -86,16 +108,22 @@ public class ColaboradorController {
 		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
 
+	/**
+	 * Metodo de exclusão de movimentação
+	 * 
+	 * @param wrapper parametro com os dados da conta e da movimentação
+	 * @return redireciona para a pagina de detalhes da conta atual
+	 */
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
-
+//		TODO validar os dados antes de excluir
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
-		
+
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
-		
-		conta.removerMovimentacao(movimentacao);		
+
+		conta.removerMovimentacao(movimentacao);
 		contaDespesaDao.mesclar(conta);
-		
+
 		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
 

@@ -43,7 +43,7 @@ public class AdminController {
 
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
-	
+
 	@RequestMapping("")
 	public ModelAndView adminOverview() {
 		ModelAndView modelAndView = new ModelAndView("admin/geral");
@@ -179,6 +179,12 @@ public class AdminController {
 		return modelAndView;
 	}
 
+	/**
+	 * Path para pagina que mostra detalhes da conta
+	 * 
+	 * @param id identificador da conta a ser buscada
+	 * @return pagina com os dados da conta selecionada
+	 */
 	@RequestMapping("contas/{id}")
 	public ModelAndView detalheConta(@PathVariable("id") Integer id) {
 
@@ -192,6 +198,13 @@ public class AdminController {
 		return modelAndView;
 	}
 
+	/**
+	 * cadastra a movimentação passada pelo do formWrapper
+	 * 
+	 * @param wrapper parametro que possui informações da conta e da movimentação a
+	 *                ser cadastrada
+	 * @return redireciona para a pagina de detalhes da conta
+	 */
 	@RequestMapping("movimentacao")
 	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
 
@@ -209,20 +222,35 @@ public class AdminController {
 		return new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
 	}
 
+	/**
+	 * metodo que atualiza os dados da movimentação passada como argumento através
+	 * do form wrapper
+	 * 
+	 * @param wrapper parametro que possui informações da conta e da movimentação
+	 * @return redireciona para a pagina de detalhes da conta
+	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 		System.out.println(wrapper.getContaId());
-		
+
 //		TODO não permitir conciliação de conta caso a categoria seja INDEFINIDO
+//		TODO não permitir edição caso a conta esteja INATIVA ou se a movimentação estiver conciliada
 
 		movimentacaoDao.mesclar(wrapper.getMovimentacao());
 
 		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 	}
 
+	/**
+	 * metodo que exclui a movimentação da conta
+	 * 
+	 * @param wrapper parametro que possui informações da conta e da movimentação
+	 * @return redireciona para a pagina de detalhes da conta
+	 */
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
 
+//		TODO validar a movimentação verificando se ela realmente pode ser excluida
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
 
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
@@ -233,9 +261,17 @@ public class AdminController {
 		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
 
+	/**
+	 * Metodo que encerra a conta passando a sua situação para INATIVA
+	 * 
+	 * 
+	 * @param conta conta a ser encerrada
+	 * @return redireciona para a pagina atual
+	 */
 	@RequestMapping("contas/fechar")
 	public ModelAndView encerrarConta(ContaDespesa conta) {
 
+//		TODO validar se a conta realmente pode ser encerrada
 		conta = contaDespesaDao.buscarContaPeloId(conta.getId());
 		conta.setDataFim(Calendar.getInstance());
 		conta.setSituacao(SituacaoConta.INATIVA);
@@ -243,17 +279,22 @@ public class AdminController {
 
 		return new ModelAndView("redirect:../.");
 	}
-	
-	
 
+	/**
+	 * DEV MODE
+	 * metodo utilizado para popular o banco 
+	 * 
+	 * 
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping("gerar-clientes")
 	public String gerarBaseFake() {
 		GeradorDeDados gerador = new GeradorDeDados();
-		
-		clientesDao.gravar(gerador.gerarClientes());		
+
+		clientesDao.gravar(gerador.gerarClientes());
 		usuarioDao.gravar(gerador.gerarUsuarios());
-		
+
 		return "Clientes Criados";
 	}
 
