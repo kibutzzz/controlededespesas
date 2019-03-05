@@ -1,6 +1,5 @@
 package br.inf.safetech.controllers;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.inf.safetech.daos.ClienteDAO;
 import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.MovimentacaoDAO;
-import br.inf.safetech.daos.RoleDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
@@ -26,7 +24,6 @@ import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.Movimentacao;
-import br.inf.safetech.model.Role;
 import br.inf.safetech.model.SituacaoConta;
 import br.inf.safetech.model.SituacaoUsuario;
 import br.inf.safetech.model.TipoMovimentacao;
@@ -46,9 +43,6 @@ public class AdminController {
 
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
-
-	@Autowired
-	private RoleDAO roleDao;
 	
 	@RequestMapping("")
 	public ModelAndView adminOverview() {
@@ -257,15 +251,8 @@ public class AdminController {
 	public String gerarBaseFake() {
 		GeradorDeDados gerador = new GeradorDeDados();
 		
-		clientesDao.gravar(gerador.gerarClientes());
-		Role role = new Role();
-		role.setNome("ROLE_ADMIN");
-		
-		roleDao.gravar(role);
-		List<Role> roles = new ArrayList<Role>();
-		roles.add(role);
-		
-		usuarioDao.gravar(gerador.gerarUsuarios(roles));
+		clientesDao.gravar(gerador.gerarClientes());		
+		usuarioDao.gravar(gerador.gerarUsuarios());
 		
 		return "Clientes Criados";
 	}
