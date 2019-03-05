@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import br.inf.safetech.model.Cliente;
-import br.inf.safetech.model.Role;
 import br.inf.safetech.model.SituacaoUsuario;
 import br.inf.safetech.model.TipoUsuario;
 import br.inf.safetech.model.Usuario;
@@ -29,14 +28,6 @@ public class GeradorDeDados {
 		return clientes;
 	}
 
-	public List<Role> criaRole() {
-		Role role = new Role();
-		role.setNome("ROLE_ADMIN");
-
-		List<Role> roles = new ArrayList<Role>();
-		roles.add(role);
-		return roles;
-	}
 
 	public List<Usuario> gerarUsuarios() {
 		List<Usuario> usuarios = new ArrayList<Usuario>();
