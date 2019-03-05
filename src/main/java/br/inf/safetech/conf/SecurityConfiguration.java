@@ -8,24 +8,38 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import br.inf.safetech.daos.UsuarioDAO;
+import br.inf.safetech.model.TipoUsuario;
 
-@EnableWebSecurity
+@EnableWebSecurity(debug=true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UsuarioDAO usuarioDao;
 
+	
+	/**
+	 * Configuração das regras de acesso as paginas do site
+	 * paginas a partir de /admin só podem ser acessadas por usuarios do tipo ADMIN
+	 * paginas a partir de /colaborador só podem ser acessadas po usuários do tipo COLABORADOR
+	 * paginas a partir de /estão liberadas para todos os usuários
+	 * 
+	 * url especial /admin/gerar-clientes está liberada para todos os usuarios pois popula o banco de dados
+	 * deve ser removida na versão final
+	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/admin/gerar-clientes").permitAll()
-				.antMatchers("/admin/**").hasRole("ADMIN")
-				.antMatchers("/colaborador/**").hasRole("COLABORADOR")
+				.antMatchers("/admin/**").hasRole(TipoUsuario.ADMIN.toString())
+				.antMatchers("/colaborador/**").hasRole(TipoUsuario.COLABORADOR.toString())
 				.antMatchers("/**").permitAll()
 				.anyRequest().authenticated()
 				.and().formLogin();
 	}
 
+	/**
+	 * Configura a autenticação para usar a criptografia BCrypt nas senhas
+	 */
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(usuarioDao).passwordEncoder(new BCryptPasswordEncoder());
