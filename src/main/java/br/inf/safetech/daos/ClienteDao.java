@@ -12,7 +12,7 @@ import br.inf.safetech.model.Cliente;
 
 @Repository
 @Transactional
-public class ClienteDao {
+public class ClienteDAO {
 
 	@PersistenceContext
 	private EntityManager manager;
