@@ -31,15 +31,21 @@ public class UsuarioDAO implements UserDetailsService {
 	}
 
 	public void gravar(Usuario usuario) {
-
 		manager.persist(usuario);
 	}
 
+	/**
+	 * 
+	 * @return lista de usuarios cadastrados no banco
+	 */
 	public List<Usuario> listar() {
-
 		return manager.createQuery("select u from Usuario u", Usuario.class).getResultList();
 	}
 
+	/**
+	 * 
+	 * @return lista de usuarios colaboradores ativos cadastrados no banco
+	 */
 	public List<Usuario> listarColaboradoresAtivos() {
 
 		return manager
@@ -49,11 +55,21 @@ public class UsuarioDAO implements UserDetailsService {
 				.getResultList();
 	}
 
+	/**
+	 * busca um usuario que possua o id passado como parametro
+	 * 
+	 * @param usuarioId Id passado como argumento
+	 * @return usuario com id solicitado
+	 */
 	public Usuario buscarUsuarioPorId(Integer usuarioId) {
 
 		return manager.createQuery("select u from Usuario u where u.id = :pId", Usuario.class)
 				.setParameter("pId", usuarioId).getSingleResult();
 	}
+	
+	/**
+	 * metodo utilizado pelo spring security para buscar dados do usuario por login
+	 */
 	@Override
 	public Usuario loadUserByUsername(String login) {
 		List<Usuario> usuarios = manager.createQuery("select u from Usuario u where u.login = :pLogin", Usuario.class)
@@ -65,11 +81,5 @@ public class UsuarioDAO implements UserDetailsService {
 		
 		return usuarios.get(0);
 	}
-
-	
-	
-	
-	
-	
 
 }
