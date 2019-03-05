@@ -1,5 +1,6 @@
 package br.inf.safetech.controllers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -12,9 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import br.inf.safetech.daos.ClienteDao;
+import br.inf.safetech.daos.ClienteDAO;
 import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.MovimentacaoDAO;
+import br.inf.safetech.daos.RoleDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
@@ -24,6 +26,7 @@ import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.Movimentacao;
+import br.inf.safetech.model.Role;
 import br.inf.safetech.model.SituacaoConta;
 import br.inf.safetech.model.SituacaoUsuario;
 import br.inf.safetech.model.TipoMovimentacao;
@@ -39,11 +42,14 @@ public class AdminController {
 	@Autowired
 	private ContaDespesaDAO contaDespesaDao;
 	@Autowired
-	private ClienteDao clientesDao;
+	private ClienteDAO clientesDao;
 
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
 
+	@Autowired
+	private RoleDAO roleDao;
+	
 	@RequestMapping("")
 	public ModelAndView adminOverview() {
 		ModelAndView modelAndView = new ModelAndView("admin/geral");
@@ -249,10 +255,18 @@ public class AdminController {
 	@ResponseBody
 	@RequestMapping("gerar-clientes")
 	public String gerarBaseFake() {
-
-		clientesDao.gravar(GeradorDeDados.gerarClientes());
-		usuarioDao.gravar(GeradorDeDados.gerarUsuarios());
-
+		GeradorDeDados gerador = new GeradorDeDados();
+		
+		clientesDao.gravar(gerador.gerarClientes());
+		Role role = new Role();
+		role.setNome("ROLE_ADMIN");
+		
+		roleDao.gravar(role);
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(role);
+		
+		usuarioDao.gravar(gerador.gerarUsuarios(roles));
+		
 		return "Clientes Criados";
 	}
 
