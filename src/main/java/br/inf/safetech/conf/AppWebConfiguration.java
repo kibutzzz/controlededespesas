@@ -7,6 +7,7 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -15,6 +16,7 @@ import br.inf.safetech.daos.UsuarioDAO;
 
 @EnableWebMvc
 @ComponentScan(basePackageClasses = {HomeController.class, UsuarioDAO.class})
+@EnableTransactionManagement(proxyTargetClass=true)
 public class AppWebConfiguration {
 
 	/**
