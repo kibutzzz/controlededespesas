@@ -18,7 +18,7 @@ public class ContaDespesaDAO {
 	@PersistenceContext
 	private EntityManager manager;
 
-	public void gravar(ContaDespesa conta) {
+	public void gravar(ContaDespesa conta) throws RuntimeException{
 		manager.persist(conta);
 	}
 

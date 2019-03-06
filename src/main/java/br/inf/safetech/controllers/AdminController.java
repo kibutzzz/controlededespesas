@@ -177,13 +177,19 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
-//		TODO logica para verificar se o cadastro da conta foi efetuado com sucesso e retornar a situação ao usuario
-
-		redirectAttributes.addFlashAttribute("statusCadastro", "Conta criada com sucesso");
-
 		conta.setSituacao(SituacaoConta.ATIVA);
 
-		contaDespesaDao.gravar(conta);
+		String statusCadastro = null;
+		try {
+			contaDespesaDao.gravar(conta);
+			statusCadastro = "Conta gravada com sucesso";
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			statusCadastro = "Não foi possivel gravar a conta";
+		} finally {
+			redirectAttributes.addFlashAttribute("statusCadastro", statusCadastro);
+		}
+		
 		return modelAndView;
 	}
 
