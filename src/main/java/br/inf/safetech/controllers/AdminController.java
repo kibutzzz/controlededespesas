@@ -139,7 +139,7 @@ public class AdminController {
 	 * @return objeto com as informações necessarias para o cadastro de contas
 	 */
 	@RequestMapping("contas/form")
-	public ModelAndView formularioCadastroConta() {
+	public ModelAndView formularioCadastroConta(RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("admin/cadastro/conta");
 
 		modelAndView.addObject("situacoes", SituacaoConta.values());
@@ -151,6 +151,10 @@ public class AdminController {
 		List<Usuario> colaboradoresDisponiveis = usuarioDao.listarColaboradoresAtivos();
 
 		modelAndView.addObject("colaboradoresDisponiveis", colaboradoresDisponiveis);
+		
+		if(clientesDisponiveis.size() == 0 || colaboradoresDisponiveis.size() == 0) {
+			redirectAttributes.addFlashAttribute("infoDisponivel", "Cadastro de contas não é possivel devido a falta de clientes ou colaboradores ativos cadastrados");
+		}
 
 		return modelAndView;
 	}
