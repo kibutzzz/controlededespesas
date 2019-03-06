@@ -1,6 +1,8 @@
 package br.inf.safetech.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +36,10 @@ public class ColaboradorController {
 	public ModelAndView usuarioOverview() {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
 
-		Usuario usuario = usuarioDao.buscarUsuarioPorId(50);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Usuario usuarioLogado = ((Usuario) authentication.getPrincipal());
+		
+		Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
 
 		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
 
