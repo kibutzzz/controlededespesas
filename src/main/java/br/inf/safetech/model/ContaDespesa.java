@@ -77,7 +77,7 @@ public class ContaDespesa {
 	public String getDataInicio() {
 		if (dataInicio == null)
 			return null;
-		return (new SimpleDateFormat("dd/MM/YYYY")).format(dataInicio.getTime());
+		return (new SimpleDateFormat("dd/MM/yyyy")).format(dataInicio.getTime());
 	}
 
 	public void setDataInicio(Calendar dataInicio) {
@@ -88,7 +88,7 @@ public class ContaDespesa {
 		if (dataFim == null)
 			return null;
 
-		return (new SimpleDateFormat("dd/MM/YYYY")).format(dataFim.getTime());
+		return (new SimpleDateFormat("dd/MM/yyyy")).format(dataFim.getTime());
 	}
 
 	public void setDataFim(Calendar dataFim) {
