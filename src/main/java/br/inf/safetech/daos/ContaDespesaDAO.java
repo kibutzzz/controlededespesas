@@ -61,7 +61,7 @@ public class ContaDespesaDAO {
 	 * 
 	 * @param conta
 	 */
-	public void mesclar(ContaDespesa conta) {
+	public void mesclar(ContaDespesa conta) throws RuntimeException {
 		manager.merge(conta);
 	}
 

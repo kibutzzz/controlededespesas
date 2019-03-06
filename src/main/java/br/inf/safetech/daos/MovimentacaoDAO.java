@@ -15,7 +15,7 @@ public class MovimentacaoDAO {
 	@PersistenceContext
 	private EntityManager manager;
 
-	public void gravar(Movimentacao movimentacao) {
+	public void gravar(Movimentacao movimentacao) throws RuntimeException {
 		manager.persist(movimentacao);
 	}
 

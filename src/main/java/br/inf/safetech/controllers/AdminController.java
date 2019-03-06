@@ -236,6 +236,8 @@ public class AdminController {
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
+		//TODO validar as transações e fazer rollback em caso de erro
+		//TODO retornar mensagem de erro para o usuario caso algo dê errado
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
 		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
@@ -258,6 +260,8 @@ public class AdminController {
 //		TODO não permitir conciliação de conta caso a categoria seja INDEFINIDO
 //		TODO não permitir edição caso a conta esteja INATIVA ou se a movimentação estiver conciliada
 
+		
+		
 		movimentacaoDao.mesclar(wrapper.getMovimentacao());
 
 		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
