@@ -13,7 +13,7 @@
 
 	<h1>Area administrativa</h1>
 	
-	<a href="${s:mvcUrl('HC#login').build()}">login</a>
+	
 	<a href="${s:mvcUrl('AC#formularioCadastroConta').build() }">cadastro de conta</a>
 	<a href="${s:mvcUrl('AC#formularioCadastroUsuario').build() }">cadastro de usuario</a>
 	<a href="${s:mvcUrl('CC#usuarioOverview').build() }">Área do Usuário</a>

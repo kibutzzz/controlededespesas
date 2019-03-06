@@ -11,7 +11,7 @@
 
 	<h1>Home</h1>
 	
-	<a href="${s:mvcUrl('HC#login').build()}">login</a>
+	
 	<a href="${s:mvcUrl('CC#usuarioOverview').build() }">Área do Usuário</a>
 	<a href="${s:mvcUrl('AC#adminOverview').build() }">Área Administrativa</a>
 
