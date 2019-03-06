@@ -30,7 +30,7 @@ public class UsuarioDAO implements UserDetailsService {
 		usuarios.forEach((usuario) -> manager.persist(usuario));
 	}
 
-	public void gravar(Usuario usuario) {
+	public void gravar(Usuario usuario) throws RuntimeException{
 		manager.persist(usuario);
 	}
 
