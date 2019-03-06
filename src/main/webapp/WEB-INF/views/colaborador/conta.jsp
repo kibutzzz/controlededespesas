@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE html>
 <html>
@@ -38,7 +39,7 @@
 
 	<h1>Movimentações</h1>
 	<c:if test="${conta.situacao == 'ATIVA' }">
-		<form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
+		<form:form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
 			method="post"}>
 			<div>
 				<label for="descricao">Descricao</label> <input type="text"
@@ -52,7 +53,7 @@
 
 			<button type="submit">Cadastrar Movimentacao</button>
 
-		</form>
+		</form:form>
 	</c:if>
 	<table>
 		<thead>
@@ -68,7 +69,7 @@
 		<tbody>
 			<c:forEach items="${conta.movimentacoes }" var="movimentacao">
 				<tr>
-					<form action="${s:mvcUrl('CC#editarMovimentacao').build() }"
+					<form:form action="${s:mvcUrl('CC#editarMovimentacao').build() }"
 						method="POST">
 						<input type="hidden" name="movimentacao.id"
 							value="${movimentacao.id }">
@@ -77,28 +78,28 @@
 							value="${movimentacao.descricao }" /></td>
 						<td><input type="text" name="movimentacao.valor"
 							value="${movimentacao.valor }" /></td>
-						<td>${movimentacao.conciliada }</td> <input type="hidden"
-							name="contaId" value="${conta.id }" />
-							
-							<!-- TODO impolementar metodo para verificar se a movimentação pode ser editada
+						<td>${movimentacao.conciliada }</td>
+						<input type="hidden" name="contaId" value="${conta.id }" />
+
+						<!-- TODO impolementar metodo para verificar se a movimentação pode ser editada
 									separado da view -->
 						<td><button type="submit"
-						
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
 											|| movimentacao.cadastradoPor == 'ADMIN'
 											|| conta.situacao == 'INATIVA'}">disabled</c:if>>Editar</button></td>
-					</form>
-					<td><form
+					</form:form>
+					<td><form:form
 							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
 							method="POST">
-							<input type="hidden" name="contaId" value="${conta.id }" /> <input
-								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
+							<input type="hidden" name="contaId" value="${conta.id }" />
+							<input type="hidden" name="movimentacao.id"
+								value="${movimentacao.id }">
 							<button
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
 											|| movimentacao.cadastradoPor == 'ADMIN'
 											|| conta.situacao == 'INATIVA'}">disabled</c:if>
 								type="submit">Excluir</button>
-						</form></td>
+						</form:form></td>
 
 				</tr>
 			</c:forEach>
