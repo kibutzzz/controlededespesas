@@ -12,6 +12,7 @@
 <body>
 
 
+	<!-- TODO ver: https://stackoverflow.com/questions/41404076/spring-security-custom-login-error-messages -->
 	<form action="${s:mvcUrl('HC#autenticar').build()}" method="post">
 
 		<label for="login">Login</label> 
