@@ -2,6 +2,7 @@ package br.inf.safetech.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 
 @Controller
@@ -15,19 +16,5 @@ public class HomeController {
 		return "home";
 	}
 	
-	@RequestMapping("/login")
-	public String login() {
-		System.out.println("Entrando no login");
-		return "login";
-	}
-	
-	
-	@RequestMapping("/login/autentica")
-	public String autenticar(String login, String senha) {
-		System.out.println(login);
-		System.out.println(senha);
 		
-		return "redirect:../";
-	}
-	
 }
