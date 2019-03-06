@@ -101,12 +101,16 @@ public class AdminController {
 	public ModelAndView cadastroUsuario(Usuario usuario, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
-//		TODO logica para verificar se a inclusão foi feita com sucesso e retorno do situação para o usuario
-
-		redirectAttributes.addFlashAttribute("statusCadastro",
-				"Usuario: " + usuario.getNome() + " cadastrado com sucesso");
-
-		usuarioDao.gravar(usuario);
+		String mensagemDeStatus = null;
+		try {
+			usuarioDao.gravar(usuario);
+			mensagemDeStatus = "Usuario: " + usuario.getNome() + " cadastrado com sucesso";
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			mensagemDeStatus = "Não foi possivel gravar o Usuário";
+		} finally {
+			redirectAttributes.addFlashAttribute("statusCadastro", mensagemDeStatus);
+		}
 
 		return modelAndView;
 	}
@@ -120,9 +124,9 @@ public class AdminController {
 	@RequestMapping("contas")
 	public ModelAndView listarContas() {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
-		// TODO Checar a se a data esta voltando corretamente
+		
 		List<ContaDespesa> contas = contaDespesaDao.listar();
-
+		
 		modelAndView.addObject("contas", contas);
 
 		return modelAndView;
@@ -258,7 +262,7 @@ public class AdminController {
 		conta.removerMovimentacao(movimentacao);
 		contaDespesaDao.mesclar(conta);
 
-		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
+		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 	}
 
 	/**
@@ -281,8 +285,7 @@ public class AdminController {
 	}
 
 	/**
-	 * DEV MODE
-	 * metodo utilizado para popular o banco 
+	 * DEV MODE metodo utilizado para popular o banco
 	 * 
 	 * 
 	 * @return
