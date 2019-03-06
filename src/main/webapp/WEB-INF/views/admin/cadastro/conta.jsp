@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE html>
 <html>
@@ -13,7 +14,7 @@
 
 	<h1>Novo Conta</h1>
 
-	<form action="${s:mvcUrl('AC#cadastroConta').build() }" method="POST">
+	<form:form action="${s:mvcUrl('AC#cadastroConta').build() }" method="POST">
 		<div>
 			<label for="usuario">Usuario</label> <select id="usuario"
 				name="usuario.id">
@@ -23,7 +24,6 @@
 			</select>
 		</div>
 
-
 		<div>
 			<label for="cliente">Cliente</label> <select id="cliente"
 				name="cliente.id">
@@ -32,14 +32,15 @@
 				</c:forEach>
 			</select>
 		</div>
+		<!--   TODO remover data de inicio do form e setar como data de criação da conta -->
 		<div>
 			<label for="dataInicio">Data de inicio</label> <input type="date"
 				id="dataInicio" name="dataInicio" required />
 		</div>
-		<!-- 		TODO decidir se data de fim sera inclusa ao criar ou ao finalizar a conta -->
+		
 
 		<button type="submit">Cadastrar Conta</button>
 
-	</form>
+	</form:form >
 </body>
 </html>

@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
 <!DOCTYPE html>
 <html>
@@ -38,8 +39,8 @@
 
 	<h1>Movimentações</h1>
 	<c:if test="${conta.situacao == 'ATIVA' }">
-		<form action="${s:mvcUrl('AC#cadastrarMovimentacao').build() }"
-			method="post"}>
+		<form:form action="${s:mvcUrl('AC#cadastrarMovimentacao').build() }"
+			method="post">
 			<div>
 				<label for="descricao">Descricao</label> <input type="text"
 					id="descricao" name="movimentacao.descricao" required />
@@ -60,7 +61,7 @@
 
 			<button type="submit">Cadastrar Movimentacao</button>
 
-		</form>
+		</form:form>
 	</c:if>
 	<table>
 		<thead>
@@ -78,7 +79,7 @@
 		<tbody>
 			<c:forEach items="${conta.movimentacoes }" var="movimentacao">
 				<tr>
-					<form action="${s:mvcUrl('AC#editarMovimentacao').build() }"
+					<form:form action="${s:mvcUrl('AC#editarMovimentacao').build() }"
 						method="POST">
 						<input type="hidden" name="movimentacao.id"
 							value="${movimentacao.id }">
@@ -118,16 +119,16 @@
 						<td><button
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
 								type="submit">Editar</button></td>
-					</form>
-					<td><form
-							action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
+					</form:form>
+					<td><form:form
+							action="${s:mvcUrl('AC#excluirMovimentacao').build() }"
 							method="POST">
 							<input type="hidden" name="contaId" value="${conta.id }" /> <input
 								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
 							<button
 								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
 								type="submit">Excluir</button>
-						</form></td>
+						</form:form></td>
 
 
 				</tr>
