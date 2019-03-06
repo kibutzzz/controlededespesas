@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.model.TipoUsuario;
@@ -34,7 +35,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/colaborador/**").hasRole(TipoUsuario.COLABORADOR.toString())
 				.antMatchers("/**").permitAll()
 				.anyRequest().authenticated()
-				.and().formLogin();
+				.and().formLogin().defaultSuccessUrl("/", false)
+				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
 	}
 
 	/**
