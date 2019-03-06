@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class ContaDespesaDAO {
 	 * @param id
 	 * @return a conta com o id passado
 	 */
-	public ContaDespesa buscarContaPeloId(Integer id) {
+	public ContaDespesa buscarContaPeloId(Integer id) throws PersistenceException {
 
 		return manager.createQuery("select c from ContaDespesa c left join fetch c.movimentacoes where c.id = :pId",
 				ContaDespesa.class).setParameter("pId", id).getSingleResult();

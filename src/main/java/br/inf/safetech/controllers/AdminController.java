@@ -3,6 +3,8 @@ package br.inf.safetech.controllers;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -124,9 +126,9 @@ public class AdminController {
 	@RequestMapping("contas")
 	public ModelAndView listarContas() {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
-		
+
 		List<ContaDespesa> contas = contaDespesaDao.listar();
-		
+
 		modelAndView.addObject("contas", contas);
 
 		return modelAndView;
@@ -151,9 +153,10 @@ public class AdminController {
 		List<Usuario> colaboradoresDisponiveis = usuarioDao.listarColaboradoresAtivos();
 
 		modelAndView.addObject("colaboradoresDisponiveis", colaboradoresDisponiveis);
-		
-		if(clientesDisponiveis.size() == 0 || colaboradoresDisponiveis.size() == 0) {
-			redirectAttributes.addFlashAttribute("infoDisponivel", "Cadastro de contas não é possivel devido a falta de clientes ou colaboradores ativos cadastrados");
+
+		if (clientesDisponiveis.size() == 0 || colaboradoresDisponiveis.size() == 0) {
+			redirectAttributes.addFlashAttribute("infoDisponivel",
+					"Cadastro de contas não é possivel devido a falta de clientes ou colaboradores ativos cadastrados");
 		}
 
 		return modelAndView;
@@ -189,7 +192,7 @@ public class AdminController {
 		} finally {
 			redirectAttributes.addFlashAttribute("statusCadastro", statusCadastro);
 		}
-		
+
 		return modelAndView;
 	}
 
@@ -204,11 +207,16 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
 
-		modelAndView.addObject("conta", contaDespesaDao.buscarContaPeloId(id));
-		modelAndView.addObject("tipos", TipoMovimentacao.values());
-		modelAndView.addObject("categorias", CategoriaMovimentacao.values());
-		modelAndView.addObject("conciliacao", EstadoConciliacao.values());
-
+		try {			
+			modelAndView.addObject("conta", contaDespesaDao.buscarContaPeloId(id));
+			modelAndView.addObject("tipos", TipoMovimentacao.values());
+			modelAndView.addObject("categorias", CategoriaMovimentacao.values());
+			modelAndView.addObject("conciliacao", EstadoConciliacao.values());
+		} catch (PersistenceException e) {
+			return listarContas();
+		}
+		
+		
 		return modelAndView;
 	}
 
