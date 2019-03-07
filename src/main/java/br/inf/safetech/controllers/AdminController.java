@@ -224,10 +224,13 @@ public class AdminController {
 	 * 
 	 * @param wrapper parametro que possui informações da conta e da movimentação a
 	 *                ser cadastrada
+	 * @param         (injetado) redirectAttributes objeto utilizado para passar a
+	 *                informação de sucesso ou falha para a proxima pagina
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping("movimentacao")
-	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
+	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
+		ModelAndView modelAndView = new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
 
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
 
@@ -235,14 +238,23 @@ public class AdminController {
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
-		// TODO validar as transações e fazer rollback em caso de erro
-		// TODO retornar mensagem de erro para o usuario caso algo dê errado
-		movimentacaoDao.gravar(wrapper.getMovimentacao());
+		if(wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel cadastrar movimentações em uma conta inativa" );
+			return modelAndView;
+		}
 
-		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
-		contaDespesaDao.mesclar(wrapper.getConta());
+		try {
+			movimentacaoDao.gravar(wrapper.getMovimentacao());
 
-		return new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
+			wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
+			contaDespesaDao.mesclar(wrapper.getConta());
+			redirectAttributes.addFlashAttribute("status", "Cadastro efetuado com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não foi possivel realizar o cadastro da movimentação");
+			return modelAndView;
+		}
+
 	}
 
 	/**
