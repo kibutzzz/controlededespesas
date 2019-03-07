@@ -10,15 +10,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.inf.safetech.daos.ContaDespesaDAO;
 import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
+import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
 import br.inf.safetech.model.Movimentacao;
+import br.inf.safetech.model.SituacaoConta;
 import br.inf.safetech.model.TipoMovimentacao;
 import br.inf.safetech.model.TipoUsuario;
 import br.inf.safetech.model.Usuario;
@@ -34,12 +37,11 @@ public class ColaboradorController {
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
 
-	
 	@RequestMapping("")
 	public ModelAndView usuarioOverview(@AuthenticationPrincipal Usuario usuarioLogado) {
-	
+
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
-		
+
 		Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
 
 		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
@@ -60,12 +62,11 @@ public class ColaboradorController {
 	@RequestMapping("conta/{id}")
 	public ModelAndView conta(@PathVariable("id") Integer id, @AuthenticationPrincipal Usuario usuarioLogado) {
 
-		// TODO permitir que o usuario só possa acessar contas vinculadas a ele
 		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
-		
-		//faz com que o usuario não tenha acesso a uma conta que não lhe pertence
-		if(conta.getUsuario().getId() != usuarioLogado.getId()){
+
+		// faz com que o usuario não tenha acesso a uma conta que não lhe pertence
+		if (conta.getUsuario().getId() != usuarioLogado.getId()) {
 			return new ModelAndView("redirect:/colaborador");
 		}
 
@@ -106,17 +107,46 @@ public class ColaboradorController {
 	 * @return redireciona para a pagina de detalhes da conta atual
 	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
-	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 
-//		TODO Validar os dados antes de editar
-		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+		ModelAndView modelAndView = new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 
-		movimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
-		movimentacao.setValor(wrapper.getMovimentacao().getValor());
+		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
-		movimentacaoDao.mesclar(movimentacao);
+		// não permite edição de movimentações conciliadas
+		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
+			return modelAndView;
+		}
 
-		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
+		// não permite conciliação de movimentações sem categoria definida
+		if (wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA
+				&& wrapper.getMovimentacao().getCategoria() == CategoriaMovimentacao.INDEFINIDO) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel conciliar uma movimentação com Categoria Indefinida");
+			return modelAndView;
+		}
+
+		// não permite editar movimentações cadastradas por um admin
+		if (wrapper.getMovimentacao().getCadastradoPor() == TipoUsuario.ADMIN) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel editar uma movimentação cadastrada por um administrador");
+			return modelAndView;
+		}
+
+		try {
+			wrapper.getMovimentacao().setDescricao(wrapper.getMovimentacao().getDescricao());
+			wrapper.getMovimentacao().setValor(wrapper.getMovimentacao().getValor());
+
+			movimentacaoDao.mesclar(wrapper.getMovimentacao());
+
+			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel editar a movimentação");
+			return modelAndView;
+		}
+
 	}
 
 	/**
@@ -126,16 +156,37 @@ public class ColaboradorController {
 	 * @return redireciona para a pagina de detalhes da conta atual
 	 */
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
-	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
-//		TODO validar os dados antes de excluir
+	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
+		ModelAndView modelAndView = new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
+		
+		if(wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
+			return modelAndView;
+		}
+		
+		if(wrapper.getMovimentacao().getCadastradoPor() == TipoUsuario.ADMIN) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação cadastrada por um administrador");
+			return modelAndView;
+		}
+		
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
-
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
-		conta.removerMovimentacao(movimentacao);
-		contaDespesaDao.mesclar(conta);
+		if(conta.getSituacao() == SituacaoConta.INATIVA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação de uma conta encerrada");
+			return modelAndView;
+		}
+		
+		try {
+			conta.removerMovimentacao(movimentacao);
+			contaDespesaDao.mesclar(conta);
+			redirectAttributes.addFlashAttribute("status", "Movimentação excluida com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não foi possivel excluir a movimentação");
+			return modelAndView;
+		}
 
-		return new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 	}
 
 }
