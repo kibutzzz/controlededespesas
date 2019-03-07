@@ -1,8 +1,10 @@
 package br.inf.safetech.controllers;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,12 +36,9 @@ public class ColaboradorController {
 
 	
 	@RequestMapping("")
-	public ModelAndView usuarioOverview() {
-		//TODO pegar principal como parametro injetado pelo spring
+	public ModelAndView usuarioOverview(@AuthenticationPrincipal Usuario usuarioLogado) {
+	
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
-
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Usuario usuarioLogado = ((Usuario) authentication.getPrincipal());
 		
 		Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
 
@@ -48,7 +47,6 @@ public class ColaboradorController {
 		return modelAndView;
 	}
 
-	// TODO permitir que o usuario só possa acessar contas vinculadas a ele
 	/**
 	 * metodo que busca as informações da conta selecionada
 	 * 
@@ -60,10 +58,16 @@ public class ColaboradorController {
 	 * @return
 	 */
 	@RequestMapping("conta/{id}")
-	public ModelAndView conta(@PathVariable("id") Integer id) {
+	public ModelAndView conta(@PathVariable("id") Integer id, @AuthenticationPrincipal Usuario usuarioLogado) {
 
+		// TODO permitir que o usuario só possa acessar contas vinculadas a ele
 		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
+		
+		//faz com que o usuario não tenha acesso a uma conta que não lhe pertence
+		if(conta.getUsuario().getId() != usuarioLogado.getId()){
+			return new ModelAndView("redirect:/colaborador");
+		}
 
 		modelAndView.addObject("conta", conta);
 
