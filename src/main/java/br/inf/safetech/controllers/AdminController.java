@@ -250,30 +250,31 @@ public class AdminController {
 	 * do form wrapper
 	 * 
 	 * @param wrapper parametro que possui informações da conta e da movimentação
+	 * @param         (injetado) redirectAttributes objeto utilizado para passar a
+	 *                informação de sucesso ou falha para a proxima pagina
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 		System.out.println(wrapper.getContaId());
-		 ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
-		 
-		
-		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());		
-		
-		//não permite edição de movimentações conciliadas
-		if(movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
+		ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+
+		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+
+		// não permite edição de movimentações conciliadas
+		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
 			return modelAndView;
-		}		
-		
-		//não permite conciliação de movimentações sem 
-		if(wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA 
+		}
+
+		// não permite conciliação de movimentações sem categoria definida
+		if (wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA
 				&& wrapper.getMovimentacao().getCategoria() == CategoriaMovimentacao.INDEFINIDO) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel conciliar uma movimentação com Categoria Indefinida");
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel conciliar uma movimentação com Categoria Indefinida");
 			return modelAndView;
 		}
-		
-		
+
 		try {
 			movimentacaoDao.mesclar(wrapper.getMovimentacao());
 			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
@@ -282,48 +283,47 @@ public class AdminController {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel editar a movimentação");
 			return modelAndView;
 		}
-		
+
 	}
 
 	/**
 	 * metodo que exclui a movimentação da conta
 	 * 
 	 * @param wrapper parametro que possui informações da conta e da movimentação
+	 * @param         (injetado) redirectAttributes objeto utilizado para passar a
+	 *                informação de sucesso ou falha para a proxima pagina
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
-		
-//		TODO validar a movimentação verificando se ela realmente pode ser excluida
+
+//		TODO implementar novo metodo que busca somente as informações da conta (sem fazer fetch com as movimentações)
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
-		//não permite exclusão de movimentações em contas inativas
-		if(conta.getSituacao() == SituacaoConta.INATIVA) {
+		// não permite exclusão de movimentações em contas inativas
+		if (conta.getSituacao() == SituacaoConta.INATIVA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir movimentações de uma conta inativa");
 			return modelAndView;
 		}
-		
-		//não permite exclusão de movimentações conciliadas
-		if(movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
+
+		// não permite exclusão de movimentações conciliadas
+		if (movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
 			return modelAndView;
 		}
-		
-		
+
 		try {
 			conta.removerMovimentacao(movimentacao);
 			contaDespesaDao.mesclar(conta);
 			redirectAttributes.addFlashAttribute("status", "movimentação excluida com sucesso");
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir movimentações de uma conta excluida");
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel excluir movimentações de uma conta excluida");
 			return modelAndView;
 		}
-
-		
-		return modelAndView;
 	}
 
 	/**
@@ -331,18 +331,33 @@ public class AdminController {
 	 * 
 	 * 
 	 * @param conta conta a ser encerrada
+	 * @param       (injetado) redirectAttributes objeto utilizado para passar a
+	 *              informação de sucesso ou falha para a proxima pagina
 	 * @return redireciona para a pagina atual
 	 */
 	@RequestMapping("contas/fechar")
-	public ModelAndView encerrarConta(ContaDespesa conta) {
+	public ModelAndView encerrarConta(ContaDespesa conta, RedirectAttributes redirectAttributes) {
+		ModelAndView modelAndView = new ModelAndView("redirect:../.");
 
-//		TODO validar se a conta realmente pode ser encerrada
 		conta = contaDespesaDao.buscarContaPeloId(conta.getId());
-		conta.setDataFim(Calendar.getInstance());
-		conta.setSituacao(SituacaoConta.INATIVA);
-		contaDespesaDao.mesclar(conta);
 
-		return new ModelAndView("redirect:../.");
+		// não permite encerramento caso alguma movimentação não esteja conciliada
+		if (!conta.getMovimentacoesEstaoConciliadas()) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas");
+			return modelAndView;
+		}
+
+		try {
+			conta.setDataFim(Calendar.getInstance());
+			conta.setSituacao(SituacaoConta.INATIVA);
+			contaDespesaDao.mesclar(conta);
+			redirectAttributes.addFlashAttribute("status", "Conta encerrada com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não foi possivel fechar a conta");
+			return modelAndView;
+		}
 	}
 
 	/**
