@@ -103,8 +103,8 @@ public class AdminController {
 	@RequestMapping(value = "usuarios/cadastro", method = RequestMethod.POST)
 	public ModelAndView cadastroUsuario(Usuario usuario, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
+//		TODO verificar se o usuario já esta cadastrado
 
-		
 		String mensagemDeStatus = null;
 		try {
 			usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
@@ -183,6 +183,7 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
+		conta.setDataInicio(Calendar.getInstance());
 		conta.setSituacao(SituacaoConta.ATIVA);
 
 		String statusCadastro = null;
@@ -232,7 +233,8 @@ public class AdminController {
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping("movimentacao")
-	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
+	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper,
+			RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./contas/" + wrapper.getConta().getId());
 
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
@@ -241,8 +243,9 @@ public class AdminController {
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
-		if(wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel cadastrar movimentações em uma conta inativa" );
+		if (wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel cadastrar movimentações em uma conta inativa");
 			return modelAndView;
 		}
 

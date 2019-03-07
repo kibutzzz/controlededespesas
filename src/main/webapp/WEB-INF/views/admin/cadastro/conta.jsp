@@ -32,11 +32,7 @@
 				</c:forEach>
 			</select>
 		</div>
-		<!--   TODO remover data de inicio do form e setar como data de criação da conta -->
-		<div>
-			<label for="dataInicio">Data de inicio</label> <input type="date"
-				id="dataInicio" name="dataInicio" required />
-		</div>
+		
 		
 
 		<button type="submit">Cadastrar Conta</button>
