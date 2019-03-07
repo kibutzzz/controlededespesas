@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,8 +104,10 @@ public class AdminController {
 	public ModelAndView cadastroUsuario(Usuario usuario, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 
+		
 		String mensagemDeStatus = null;
 		try {
+			usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
 			usuarioDao.gravar(usuario);
 			mensagemDeStatus = "Usuario: " + usuario.getNome() + " cadastrado com sucesso";
 		} catch (RuntimeException e) {
