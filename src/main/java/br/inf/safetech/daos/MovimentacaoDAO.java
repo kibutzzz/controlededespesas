@@ -25,7 +25,7 @@ public class MovimentacaoDAO {
 	 * @param movimentacao movimentação com os novos dados 
 	 * @return movimentação com os dados atualizados
 	 */
-	public Movimentacao mesclar(Movimentacao movimentacao) {
+	public Movimentacao mesclar(Movimentacao movimentacao) throws RuntimeException {
 		return manager.merge(movimentacao);
 	}
 

@@ -32,8 +32,10 @@ public class ColaboradorController {
 	@Autowired
 	private MovimentacaoDAO movimentacaoDao;
 
+	
 	@RequestMapping("")
 	public ModelAndView usuarioOverview() {
+		//TODO pegar principal como parametro injetado pelo spring
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

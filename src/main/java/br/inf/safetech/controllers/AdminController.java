@@ -207,7 +207,7 @@ public class AdminController {
 
 		ModelAndView modelAndView = new ModelAndView("admin/detalhe/conta");
 
-		try {			
+		try {
 			modelAndView.addObject("conta", contaDespesaDao.buscarContaPeloId(id));
 			modelAndView.addObject("tipos", TipoMovimentacao.values());
 			modelAndView.addObject("categorias", CategoriaMovimentacao.values());
@@ -215,8 +215,7 @@ public class AdminController {
 		} catch (PersistenceException e) {
 			return listarContas();
 		}
-		
-		
+
 		return modelAndView;
 	}
 
@@ -236,8 +235,8 @@ public class AdminController {
 		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.EMPRESA);
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
-		//TODO validar as transações e fazer rollback em caso de erro
-		//TODO retornar mensagem de erro para o usuario caso algo dê errado
+		// TODO validar as transações e fazer rollback em caso de erro
+		// TODO retornar mensagem de erro para o usuario caso algo dê errado
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
 		wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
@@ -254,17 +253,36 @@ public class AdminController {
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
-	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
+	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 		System.out.println(wrapper.getContaId());
-
-//		TODO não permitir conciliação de conta caso a categoria seja INDEFINIDO
-//		TODO não permitir edição caso a conta esteja INATIVA ou se a movimentação estiver conciliada
-
+		 ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+		 
+		
+		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());		
+		
+		//não permite edição de movimentações conciliadas
+		if(movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
+			return modelAndView;
+		}		
+		
+		//não permite conciliação de movimentações sem 
+		if(wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA 
+				&& wrapper.getMovimentacao().getCategoria() == CategoriaMovimentacao.INDEFINIDO) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel conciliar uma movimentação com Categoria Indefinida");
+			return modelAndView;
+		}
 		
 		
-		movimentacaoDao.mesclar(wrapper.getMovimentacao());
-
-		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+		try {
+			movimentacaoDao.mesclar(wrapper.getMovimentacao());
+			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel editar a movimentação");
+			return modelAndView;
+		}
+		
 	}
 
 	/**
