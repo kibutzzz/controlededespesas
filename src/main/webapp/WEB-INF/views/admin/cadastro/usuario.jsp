@@ -2,6 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
 
 <!DOCTYPE html>
 <html>
@@ -13,7 +15,7 @@
 
 	<h1>Novo Usuario</h1>
 
-	<form action="${s:mvcUrl('AC#cadastroUsuario').build() }"
+	<form:form action="${s:mvcUrl('AC#cadastroUsuario').build() }"
 		method="POST">
 		<div>
 			<label for="nome">nome</label> <input type="text" id="nome"
@@ -47,6 +49,6 @@
 
 		<button type="submit">Cadastrar Usuario</button>
 
-	</form>
+	</form:form>
 </body>
 </html>

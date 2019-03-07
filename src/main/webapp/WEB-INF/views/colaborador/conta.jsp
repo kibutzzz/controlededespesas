@@ -40,7 +40,7 @@
 	<h1>Movimentações</h1>
 	<c:if test="${conta.situacao == 'ATIVA' }">
 		<form:form action="${s:mvcUrl('CC#cadastrarMovimentacao').build() }"
-			method="post"}>
+			method="post">
 			<div>
 				<label for="descricao">Descricao</label> <input type="text"
 					id="descricao" name="movimentacao.descricao" required />
