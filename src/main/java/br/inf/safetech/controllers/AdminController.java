@@ -292,17 +292,38 @@ public class AdminController {
 	 * @return redireciona para a pagina de detalhes da conta
 	 */
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
-	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper) {
-
+	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
+		ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+		
 //		TODO validar a movimentação verificando se ela realmente pode ser excluida
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
-
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
-		conta.removerMovimentacao(movimentacao);
-		contaDespesaDao.mesclar(conta);
+		//não permite exclusão de movimentações em contas inativas
+		if(conta.getSituacao() == SituacaoConta.INATIVA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir movimentações de uma conta inativa");
+			return modelAndView;
+		}
+		
+		//não permite exclusão de movimentações conciliadas
+		if(movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
+			return modelAndView;
+		}
+		
+		
+		try {
+			conta.removerMovimentacao(movimentacao);
+			contaDespesaDao.mesclar(conta);
+			redirectAttributes.addFlashAttribute("status", "movimentação excluida com sucesso");
+			return modelAndView;
+		} catch (RuntimeException e) {
+			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir movimentações de uma conta excluida");
+			return modelAndView;
+		}
 
-		return new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
+		
+		return modelAndView;
 	}
 
 	/**
