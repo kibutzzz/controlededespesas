@@ -1,5 +1,6 @@
 package br.inf.safetech.controllers;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
+import br.inf.safetech.formwrapper.EncerramentoContaWrapper;
 import br.inf.safetech.helper.GeradorDeDados;
 import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.Cliente;
@@ -300,7 +302,7 @@ public class AdminController {
 			novaMovimentacao.setValor(wrapper.getMovimentacao().getValor());
 			novaMovimentacao.setConciliada(wrapper.getMovimentacao().getConciliada());
 			novaMovimentacao.setCategoria(wrapper.getMovimentacao().getCategoria());
-			
+
 			movimentacaoDao.mesclar(novaMovimentacao);
 			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
 			return modelAndView;
@@ -350,8 +352,24 @@ public class AdminController {
 			return modelAndView;
 		}
 	}
-	
-	
+
+	@RequestMapping("contas/fechar/confirmacao")
+	public ModelAndView confirmarEncerramento(ContaDespesa conta, RedirectAttributes redirectAttributes) {
+
+		conta = contaDespesaDao.buscarContaPeloId(conta.getId());
+
+		// não permite encerramento caso alguma movimentação não esteja conciliada
+		if (!conta.getMovimentacoesEstaoConciliadas()) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas");
+			return new ModelAndView("redirect:./../" + conta.getId());
+		}
+
+		ModelAndView modelAndView = new ModelAndView("admin/cadastro/encerramento");
+		modelAndView.addObject("conta", conta);
+
+		return modelAndView;
+	}
 
 	/**
 	 * Metodo que encerra a conta passando a sua situação para INATIVA
@@ -363,16 +381,35 @@ public class AdminController {
 	 * @return redireciona para a pagina atual
 	 */
 	@RequestMapping("contas/fechar")
-	public ModelAndView encerrarConta(ContaDespesa conta, RedirectAttributes redirectAttributes) {
+	public ModelAndView encerrarConta(EncerramentoContaWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:../.");
 
-		conta = contaDespesaDao.buscarContaPeloId(conta.getId());
+		System.out.println(wrapper.getFormaDeEncerramento());
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId());
 
 		// não permite encerramento caso alguma movimentação não esteja conciliada
+		// verificação necessária ois o colaborador pode ter cadastrado uma movimentação
+		// no meio tempo;
 		if (!conta.getMovimentacoesEstaoConciliadas()) {
 			redirectAttributes.addFlashAttribute("status",
 					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas");
-			return modelAndView;
+			return new ModelAndView("redirect:./" + conta.getId());
+		}
+
+		if (!(conta.getSaldoDisponivel().compareTo(new BigDecimal("0.00")) == 0)) {
+			Movimentacao movimentacaoFinal = new Movimentacao();
+			movimentacaoFinal.setCadastradoPor(TipoUsuario.ADMIN);
+			movimentacaoFinal.setCategoria(CategoriaMovimentacao.EMPRESA);
+			
+			movimentacaoFinal.setConciliada(EstadoConciliacao.CONCILIADA);
+			movimentacaoFinal.setDescricao(wrapper.getFormaDeEncerramento().toUpperCase());
+			
+			movimentacaoFinal.setTipo(TipoMovimentacao.DEBITO);
+			movimentacaoFinal.setValor(conta.getSaldoDisponivel());
+			
+			movimentacaoDao.gravar(movimentacaoFinal);	
+			conta.adicionarMovimentacao(movimentacaoFinal);	
+			
 		}
 
 		try {
