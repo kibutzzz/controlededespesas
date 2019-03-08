@@ -1,9 +1,8 @@
 package br.inf.safetech.controllers;
 
-import java.security.Principal;
+import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,14 +62,19 @@ public class ColaboradorController {
 	public ModelAndView conta(@PathVariable("id") Integer id, @AuthenticationPrincipal Usuario usuarioLogado) {
 
 		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
-		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
 
-		// faz com que o usuario não tenha acesso a uma conta que não lhe pertence
-		if (conta.getUsuario().getId() != usuarioLogado.getId()) {
-			return new ModelAndView("redirect:/colaborador");
+		try {
+			ContaDespesa conta = contaDespesaDao.buscarContaPeloId(id);
+
+			// faz com que o usuario não tenha acesso a uma conta que não lhe pertence
+			if (conta.getUsuario().getId() != usuarioLogado.getId()) {
+				return new ModelAndView("redirect:/colaborador");
+			}
+
+			modelAndView.addObject("conta", conta);
+		} catch (PersistenceException e) {
+			return usuarioOverview(usuarioLogado);
 		}
-
-		modelAndView.addObject("conta", conta);
 
 		return modelAndView;
 	}
@@ -134,10 +138,9 @@ public class ColaboradorController {
 			return modelAndView;
 		}
 
-
 		try {
 			Movimentacao novaMovimentacao = movimentacaoAntiga;
-			
+
 			novaMovimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
 			novaMovimentacao.setValor(wrapper.getMovimentacao().getValor());
 
@@ -161,25 +164,27 @@ public class ColaboradorController {
 	@RequestMapping(value = "movimentacao/excluir", method = RequestMethod.POST)
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
-		
+
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
-		
-		if(movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
+
+		if (movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
 			return modelAndView;
 		}
-		
-		if(movimentacao.getCadastradoPor() == TipoUsuario.ADMIN) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação cadastrada por um administrador");
+
+		if (movimentacao.getCadastradoPor() == TipoUsuario.ADMIN) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel excluir uma movimentação cadastrada por um administrador");
 			return modelAndView;
 		}
-		
-		if(conta.getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação de uma conta encerrada");
+
+		if (conta.getSituacao() == SituacaoConta.INATIVA) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel excluir uma movimentação de uma conta encerrada");
 			return modelAndView;
 		}
-		
+
 		try {
 			conta.removerMovimentacao(movimentacao);
 			contaDespesaDao.mesclar(conta);
