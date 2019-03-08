@@ -14,6 +14,7 @@
 
 	<h1>Conta ${conta.cliente.nome }</h1>
 
+	<c:if test="${not empty status }">${status }</c:if>
 	<table>
 		<thead>
 			<tr>

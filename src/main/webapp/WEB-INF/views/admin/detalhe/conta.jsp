@@ -13,6 +13,7 @@
 <body>
 
 	<h1>Conta</h1>
+	<c:if test="${not empty status }">${status }</c:if>
 
 	<table>
 		<thead>

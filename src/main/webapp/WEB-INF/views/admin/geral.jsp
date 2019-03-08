@@ -12,6 +12,7 @@
 <body>
 
 	<h1>Area administrativa</h1>
+		<c:if test="${not empty status }">${status }</c:if>
 	
 	
 	<a href="${s:mvcUrl('AC#formularioCadastroConta').build() }">cadastro de conta</a>
