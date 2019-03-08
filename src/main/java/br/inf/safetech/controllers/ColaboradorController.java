@@ -113,6 +113,13 @@ public class ColaboradorController {
 
 		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
+		// não permite editar movimentações cadastradas por um admin
+		if (movimentacaoAntiga.getCadastradoPor() == TipoUsuario.ADMIN) {
+			redirectAttributes.addFlashAttribute("status",
+					"Não é possivel editar uma movimentação cadastrada por um administrador");
+			return modelAndView;
+		}
+
 		// não permite edição de movimentações conciliadas
 		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
@@ -127,18 +134,14 @@ public class ColaboradorController {
 			return modelAndView;
 		}
 
-		// não permite editar movimentações cadastradas por um admin
-		if (wrapper.getMovimentacao().getCadastradoPor() == TipoUsuario.ADMIN) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel editar uma movimentação cadastrada por um administrador");
-			return modelAndView;
-		}
 
 		try {
-			wrapper.getMovimentacao().setDescricao(wrapper.getMovimentacao().getDescricao());
-			wrapper.getMovimentacao().setValor(wrapper.getMovimentacao().getValor());
+			Movimentacao novaMovimentacao = movimentacaoAntiga;
+			
+			novaMovimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
+			novaMovimentacao.setValor(wrapper.getMovimentacao().getValor());
 
-			movimentacaoDao.mesclar(wrapper.getMovimentacao());
+			movimentacaoDao.mesclar(novaMovimentacao);
 
 			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
 			return modelAndView;
@@ -159,19 +162,19 @@ public class ColaboradorController {
 	public ModelAndView excluirMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:./../conta/" + wrapper.getContaId());
 		
-		if(wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA) {
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
+		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
+		
+		if(movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
 			return modelAndView;
 		}
 		
-		if(wrapper.getMovimentacao().getCadastradoPor() == TipoUsuario.ADMIN) {
+		if(movimentacao.getCadastradoPor() == TipoUsuario.ADMIN) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação cadastrada por um administrador");
 			return modelAndView;
 		}
 		
-		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.parseInt(wrapper.getContaId()));
-		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
-
 		if(conta.getSituacao() == SituacaoConta.INATIVA) {
 			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação de uma conta encerrada");
 			return modelAndView;
