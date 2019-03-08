@@ -141,7 +141,7 @@
 			<tr>
 				<td colspan="2">total</td>
 				<td>${conta.saldoDisponivel }</td>
-				<td><form action="${s:mvcUrl('AC#encerrarConta').build() }">
+				<td><form action="${s:mvcUrl('AC#confirmarEncerramento').build() }">
 						<input type="hidden" name="id" value="${conta.id }">
 						<c:if test="${conta.situacao == 'ATIVA' }">
 						<button
