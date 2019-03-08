@@ -294,7 +294,14 @@ public class AdminController {
 		}
 
 		try {
-			movimentacaoDao.mesclar(wrapper.getMovimentacao());
+			Movimentacao novaMovimentacao = movimentacaoAntiga;
+			novaMovimentacao.setTipo(wrapper.getMovimentacao().getTipo());
+			novaMovimentacao.setDescricao(wrapper.getMovimentacao().getDescricao());
+			novaMovimentacao.setValor(wrapper.getMovimentacao().getValor());
+			novaMovimentacao.setConciliada(wrapper.getMovimentacao().getConciliada());
+			novaMovimentacao.setCategoria(wrapper.getMovimentacao().getCategoria());
+			
+			movimentacaoDao.mesclar(novaMovimentacao);
 			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
 			return modelAndView;
 		} catch (RuntimeException e) {
@@ -343,6 +350,8 @@ public class AdminController {
 			return modelAndView;
 		}
 	}
+	
+	
 
 	/**
 	 * Metodo que encerra a conta passando a sua situação para INATIVA
