@@ -35,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/colaborador/**").hasRole(TipoUsuario.COLABORADOR.toString())
 				.antMatchers("/**").permitAll()
 				.anyRequest().authenticated()
-				.and().formLogin().defaultSuccessUrl("/", false)
+				.and().formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/", false)
 				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
 	}
 
@@ -47,4 +47,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(usuarioDao).passwordEncoder(new BCryptPasswordEncoder());
 	}
 
+	
+	
 }
