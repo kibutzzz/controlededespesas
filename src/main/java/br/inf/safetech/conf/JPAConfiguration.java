@@ -20,9 +20,7 @@ public class JPAConfiguration {
 	private static final String USERNAME = "leonardo";
 	private static final String PASSWORD = "password";
 	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
-//	private static final String URL = "jdbc:mysql://localhost:3306/controlededespesas";
-	private static final String DRIVER_CLASS_NAME = "oracle.jdbc.OracleDriver"; //revisar
-//	private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver"; //revisar
+	private static final String DRIVER_CLASS_NAME = "oracle.jdbc.OracleDriver"; 
 	
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -43,7 +41,6 @@ public class JPAConfiguration {
 		
 		Properties props = new Properties();
 		props.setProperty("hibernate.dialect", "org.hibernate.dialect.OracleDialect");
-//		props.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
 		props.setProperty("hibernate.show_sql", "true");
 		props.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 		
