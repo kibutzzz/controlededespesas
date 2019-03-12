@@ -10,8 +10,6 @@
 
 	<div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item"></li>
-			<li class="nav-item"></li>
 
 			<li class="nav-item pl-0"><a class="nav-link text-justify"
 				href="${s:mvcUrl('AC#listarUsuarios').build() }">Usuarios
@@ -28,12 +26,15 @@
 						href="${s:mvcUrl('AC#formularioCadastroConta').build() }">
 						cadastro de conta </a> <a class="dropdown-item"
 						href="${s:mvcUrl('AC#formularioCadastroUsuario').build() }">cadastro
-						de usuario</a> 
+						de usuario</a>
 
 				</div>
-				
-			</li>
+			
 
+		</ul>
+		<ul class="navbar-nav ml-auto">
+		<li class=" nav-item"><a class="nav-link text-justify"
+				href="<c:url value="/logout" />">Logout</a></li>
 		</ul>
 
 	</div>
