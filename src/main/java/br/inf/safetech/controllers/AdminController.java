@@ -24,6 +24,8 @@ import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EncerramentoContaWrapper;
 import br.inf.safetech.helper.GeradorDeDados;
+import br.inf.safetech.helper.StatusInfo;
+import br.inf.safetech.helper.StatusType;
 import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.Cliente;
 import br.inf.safetech.model.ContaDespesa;
@@ -108,15 +110,20 @@ public class AdminController {
 //		TODO verificar se o usuario já esta cadastrado
 
 		String mensagemDeStatus = null;
+		StatusType tipo = null;
 		try {
 			usuario.setSenha(new BCryptPasswordEncoder().encode(usuario.getSenha()));
 			usuarioDao.gravar(usuario);
 			mensagemDeStatus = "Usuario: " + usuario.getNome() + " cadastrado com sucesso";
+			tipo = StatusType.SUCESSO;
 		} catch (RuntimeException e) {
 			e.printStackTrace();
+			tipo = StatusType.ERRO;
 			mensagemDeStatus = "Não foi possivel gravar o Usuário";
 		} finally {
-			redirectAttributes.addFlashAttribute("statusCadastro", mensagemDeStatus);
+
+			StatusInfo status = new StatusInfo(tipo, mensagemDeStatus);
+			redirectAttributes.addFlashAttribute("status", status);
 		}
 
 		return modelAndView;
@@ -160,8 +167,10 @@ public class AdminController {
 		modelAndView.addObject("colaboradoresDisponiveis", colaboradoresDisponiveis);
 
 		if (clientesDisponiveis.size() == 0 || colaboradoresDisponiveis.size() == 0) {
-			redirectAttributes.addFlashAttribute("infoDisponivel",
-					"Cadastro de contas não é possivel devido a falta de clientes ou colaboradores ativos cadastrados");
+			redirectAttributes.addFlashAttribute("status",
+					 new StatusInfo(StatusType.ALERTA, "Cadastro de contas não é possivel devido a "
+					 		+ "falta de clientes ou colaboradores ativos cadastrados"));
+
 		}
 
 		return modelAndView;
@@ -189,14 +198,17 @@ public class AdminController {
 		conta.setSituacao(SituacaoConta.ATIVA);
 
 		String statusCadastro = null;
+		StatusType tipo = null;
 		try {
 			contaDespesaDao.gravar(conta);
 			statusCadastro = "Conta gravada com sucesso";
+			tipo = StatusType.SUCESSO;
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 			statusCadastro = "Não foi possivel gravar a conta";
+			tipo = StatusType.ERRO;
 		} finally {
-			redirectAttributes.addFlashAttribute("statusCadastro", statusCadastro);
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(tipo, statusCadastro));
 		}
 
 		return modelAndView;
@@ -247,7 +259,7 @@ public class AdminController {
 
 		if (wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
 			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel cadastrar movimentações em uma conta inativa");
+					new StatusInfo(StatusType.ERRO, "Não é possivel cadastrar novas movimentaçõespor que a conta está encerrada!"));
 			return modelAndView;
 		}
 
@@ -256,10 +268,10 @@ public class AdminController {
 
 			wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
 			contaDespesaDao.mesclar(wrapper.getConta());
-			redirectAttributes.addFlashAttribute("status", "Cadastro efetuado com sucesso");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Conta cadastrada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não foi possivel realizar o cadastro da movimentação");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não foi possivel realizar o cadastro da movimentação"));
 			return modelAndView;
 		}
 
@@ -283,15 +295,16 @@ public class AdminController {
 
 		// não permite edição de movimentações conciliadas
 		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel editar uma"
+					+ " movimentação conciliada"));
 			return modelAndView;
 		}
 
 		// não permite conciliação de movimentações sem categoria definida
 		if (wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA
 				&& wrapper.getMovimentacao().getCategoria() == CategoriaMovimentacao.INDEFINIDO) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel conciliar uma movimentação com Categoria Indefinida");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel conciliar uma movimentação com Categoria Indefinida"));
 			return modelAndView;
 		}
 
@@ -304,10 +317,10 @@ public class AdminController {
 			novaMovimentacao.setCategoria(wrapper.getMovimentacao().getCategoria());
 
 			movimentacaoDao.mesclar(novaMovimentacao);
-			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Movimentação editada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel editar a movimentação");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não é possivel editar a movimentação"));
 			return modelAndView;
 		}
 
@@ -331,24 +344,26 @@ public class AdminController {
 
 		// não permite exclusão de movimentações em contas inativas
 		if (conta.getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir movimentações de uma conta inativa");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel excluir "
+					+ "movimentações de uma conta inativa"));
 			return modelAndView;
 		}
 
 		// não permite exclusão de movimentações conciliadas
 		if (movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel excluir"
+					+ " uma movimentação conciliada"));
 			return modelAndView;
 		}
 
 		try {
 			conta.removerMovimentacao(movimentacao);
 			contaDespesaDao.mesclar(conta);
-			redirectAttributes.addFlashAttribute("status", "movimentação excluida com sucesso");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "movimentação excluida com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel excluir movimentações de uma conta excluida");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO,
+					"Não é possivel excluir movimentações de uma conta excluida"));
 			return modelAndView;
 		}
 	}
@@ -360,8 +375,8 @@ public class AdminController {
 
 		// não permite encerramento caso alguma movimentação não esteja conciliada
 		if (!conta.getMovimentacoesEstaoConciliadas()) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, 
+					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas"));
 			return new ModelAndView("redirect:./../" + conta.getId());
 		}
 
@@ -391,8 +406,8 @@ public class AdminController {
 		// verificação necessária ois o colaborador pode ter cadastrado uma movimentação
 		// no meio tempo;
 		if (!conta.getMovimentacoesEstaoConciliadas()) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas"));
 			return new ModelAndView("redirect:./" + conta.getId());
 		}
 
@@ -400,26 +415,26 @@ public class AdminController {
 			Movimentacao movimentacaoFinal = new Movimentacao();
 			movimentacaoFinal.setCadastradoPor(TipoUsuario.ADMIN);
 			movimentacaoFinal.setCategoria(CategoriaMovimentacao.EMPRESA);
-			
+
 			movimentacaoFinal.setConciliada(EstadoConciliacao.CONCILIADA);
 			movimentacaoFinal.setDescricao(wrapper.getFormaDeEncerramento().toUpperCase());
-			
+
 			movimentacaoFinal.setTipo(TipoMovimentacao.DEBITO);
 			movimentacaoFinal.setValor(conta.getSaldoDisponivel());
-			
-			movimentacaoDao.gravar(movimentacaoFinal);	
-			conta.adicionarMovimentacao(movimentacaoFinal);	
-			
+
+			movimentacaoDao.gravar(movimentacaoFinal);
+			conta.adicionarMovimentacao(movimentacaoFinal);
+
 		}
 
 		try {
 			conta.setDataFim(Calendar.getInstance());
 			conta.setSituacao(SituacaoConta.INATIVA);
 			contaDespesaDao.mesclar(conta);
-			redirectAttributes.addFlashAttribute("status", "Conta encerrada com sucesso");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Conta encerrada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não foi possivel fechar a conta");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não foi possivel fechar a conta"));
 			return modelAndView;
 		}
 	}
