@@ -4,17 +4,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Conta</title>
-</head>
-<body>
+
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+
+
+<tags:pageTemplate titulo="Conta ${conta.cliente.nome }">
 
 	<h1>Conta ${conta.cliente.nome }</h1>
 
-	<c:if test="${not empty status }">${status }</c:if>
 	<table>
 		<thead>
 			<tr>
@@ -113,6 +110,4 @@
 			</tr>
 		</tfoot>
 	</table>
-
-</body>
-</html>
+</tags:pageTemplate>
