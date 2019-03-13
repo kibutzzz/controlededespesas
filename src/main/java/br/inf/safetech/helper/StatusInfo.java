@@ -2,22 +2,25 @@ package br.inf.safetech.helper;
 
 public class StatusInfo {
 
-	private String type;
+	private StatusType type;
 	private String message;
+	
 
-	public StatusInfo(String type, String message) {
+	public StatusInfo(StatusType tipo, String message) {
 		super();
-		this.type = type;
+		this.type = tipo;
 		this.message = message;
 	}
 
-	public String getType() {
+	public StatusType getType() {
 		return type;
 	}
 
 	public String getMessage() {
 		return message;
 	}
+	
+	
 
 	
 }
