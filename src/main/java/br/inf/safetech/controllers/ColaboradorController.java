@@ -1,5 +1,6 @@
 package br.inf.safetech.controllers;
 
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import br.inf.safetech.daos.MovimentacaoDAO;
 import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
+import br.inf.safetech.helper.StatusInfo;
+import br.inf.safetech.helper.StatusType;
 import br.inf.safetech.model.CategoriaMovimentacao;
 import br.inf.safetech.model.ContaDespesa;
 import br.inf.safetech.model.EstadoConciliacao;
@@ -41,9 +44,14 @@ public class ColaboradorController {
 
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
 
-		Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
+		try {
+			
+			Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
+			modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
+ 		} catch (NoResultException e) {
+ 			return new ModelAndView("./../login"); 
+ 		}
 
-		modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
 
 		return modelAndView;
 	}
@@ -59,7 +67,8 @@ public class ColaboradorController {
 	 * @return
 	 */
 	@RequestMapping("conta/{id}")
-	public ModelAndView conta(@PathVariable("id") Integer id, @AuthenticationPrincipal Usuario usuarioLogado) {
+	public ModelAndView conta(@PathVariable("id") Integer id, @AuthenticationPrincipal Usuario usuarioLogado,
+			RedirectAttributes redirectAttributes) {
 
 		ModelAndView modelAndView = new ModelAndView("colaborador/conta");
 
@@ -68,6 +77,7 @@ public class ColaboradorController {
 
 			// faz com que o usuario não tenha acesso a uma conta que não lhe pertence
 			if (conta.getUsuario().getId() != usuarioLogado.getId()) {
+				redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "A conta de id " + id + " pertence a outro usuário"));
 				return new ModelAndView("redirect:/colaborador");
 			}
 
@@ -119,22 +129,23 @@ public class ColaboradorController {
 
 		// não permite editar movimentações cadastradas por um admin
 		if (movimentacaoAntiga.getCadastradoPor() == TipoUsuario.ADMIN) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel editar uma movimentação cadastrada por um administrador");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel editar uma movimentação cadastrada por um administrador"));
 			return modelAndView;
 		}
 
 		// não permite edição de movimentações conciliadas
 		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel editar uma movimentação conciliada");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ALERTA, "Não é possivel editar uma movimentação conciliada"));
 			return modelAndView;
 		}
 
 		// não permite conciliação de movimentações sem categoria definida
 		if (wrapper.getMovimentacao().getConciliada() == EstadoConciliacao.CONCILIADA
 				&& wrapper.getMovimentacao().getCategoria() == CategoriaMovimentacao.INDEFINIDO) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel conciliar uma movimentação com Categoria Indefinida");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel conciliar uma movimentação com Categoria Indefinida"));
 			return modelAndView;
 		}
 
@@ -146,10 +157,12 @@ public class ColaboradorController {
 
 			movimentacaoDao.mesclar(novaMovimentacao);
 
-			redirectAttributes.addFlashAttribute("status", "Movimentação editada com sucesso");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "Movimentação editada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel editar a movimentação");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não é possivel editar a movimentação"));
 			return modelAndView;
 		}
 
@@ -169,29 +182,32 @@ public class ColaboradorController {
 		Movimentacao movimentacao = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
 		if (movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", "Não é possivel excluir uma movimentação conciliada");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ALERTA, "Não é possivel excluir uma movimentação conciliada"));
 			return modelAndView;
 		}
 
 		if (movimentacao.getCadastradoPor() == TipoUsuario.ADMIN) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel excluir uma movimentação cadastrada por um administrador");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel excluir uma movimentação cadastrada por um administrador"));
 			return modelAndView;
 		}
 
 		if (conta.getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status",
-					"Não é possivel excluir uma movimentação de uma conta encerrada");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel excluir uma movimentação de uma conta encerrada"));
 			return modelAndView;
 		}
 
 		try {
 			conta.removerMovimentacao(movimentacao);
 			contaDespesaDao.mesclar(conta);
-			redirectAttributes.addFlashAttribute("status", "Movimentação excluida com sucesso");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "Movimentação excluida com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", "Não foi possivel excluir a movimentação");
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não foi possivel excluir a movimentação"));
 			return modelAndView;
 		}
 
