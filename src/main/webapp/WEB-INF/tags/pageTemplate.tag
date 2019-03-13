@@ -2,8 +2,8 @@
 <%@ attribute name="titulo" required="true"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
 
 <c:url value="/" var="contextPath" />
 
@@ -18,11 +18,13 @@
 <link rel="stylesheet"
 	href="${contextPath }resources/css/bootstrap.min.css">
 
-<title>${titulo }| controlededespesas</title>
+<title>${titulo } | Controle de despesas</title>
 </head>
 <body>
-	<%@ include file="../views/admin/templates/nav.jsp"%>
+	<%@ include file="../views/templates/nav.jsp"%>
 	<div class="container">
+		<%@ include file="../views/templates/statusAlert.jsp"%>
+
 		<jsp:doBody />
 	</div>
 </body>
