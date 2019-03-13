@@ -8,7 +8,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 
-<tags:adminPageTemplate titulo="Cadastro de conta ">
+<tags:pageTemplate titulo="Cadastro de conta ">
 
 
 	<h1>Nova Conta</h1>
@@ -38,4 +38,4 @@
 		<button type="submit">Cadastrar Conta</button>
 
 	</form:form>
-</tags:adminPageTemplate>
+</tags:pageTemplate>

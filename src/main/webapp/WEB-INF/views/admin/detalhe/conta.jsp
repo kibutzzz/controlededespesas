@@ -4,17 +4,15 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Area administrativa</title>
-</head>
-<body>
+
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+
+
+<tags:pageTemplate titulo="Detalhe da conta ${conta.cliente.nome }">
+
 
 	<h1>Conta</h1>
-	<c:if test="${not empty status }">${status }</c:if>
-
+	
 	<table>
 		<thead>
 			<tr>
@@ -152,6 +150,4 @@
 			</tr>
 		</tfoot>
 	</table>
-
-</body>
-</html>
+</tags:pageTemplate>

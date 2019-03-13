@@ -5,14 +5,14 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 
-<tags:adminPageTemplate titulo="Area administrativa">
+<tags:pageTemplate titulo="Area administrativa">
 
 
 
 	
 	<div class="container ">
 		<h1 class="mt-4">Area administrativa</h1>
-		<c:if test="${not empty status }">${status }</c:if>
+		
 
 	</div>
 
@@ -20,4 +20,4 @@
 	<!-- 	TODO desenvolver area administrativa  -->
 
 
-</tags:adminPageTemplate>
+</tags:pageTemplate>

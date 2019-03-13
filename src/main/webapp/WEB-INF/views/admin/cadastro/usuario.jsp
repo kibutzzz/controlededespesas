@@ -6,7 +6,7 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<tags:adminPageTemplate titulo="Cadastro de Usuário">
+<tags:pageTemplate titulo="Cadastro de Usuário">
 
 	<h1>Novo Usuario</h1>
 
@@ -45,4 +45,4 @@
 		<button type="submit">Cadastrar Usuario</button>
 
 	</form:form>
-</tags:adminPageTemplate>
+</tags:pageTemplate>
