@@ -6,35 +6,35 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 
-<tags:adminPageTemplate titulo="Usuários cadastrados">
+<tags:pageTemplate titulo="Usuários cadastrados">
 
 
 
 	<h1>Lista de Usuarios Cadastrados no sistema</h1>
-	<c:if test="${not empty statusCadastro }">
-		<p>${statusCadastro}</p>
-	</c:if>
-	<table>
-		<thead>
-			<tr>
-				<td>Nome</td>
-				<td>Login</td>
-				<td>Senha</td>
-				<td>Tipo</td>
-				<td>Situação</td>
-			</tr>
-		</thead>
-
-		<tbody>
-			<c:forEach items="${usuarios}" var="usuario">
+	
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
 				<tr>
-					<td>${usuario.nome}</td>
-					<td>${usuario.login}</td>
-					<td>${usuario.senha}</td>
-					<td>${usuario.tipo}</td>
-					<td>${usuario.situacao}</td>
+					<td>Nome</td>
+					<td>Login</td>
+
+					<td>Tipo</td>
+					<td>Situação</td>
 				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-</tags:adminPageTemplate>
+			</thead>
+
+			<tbody>
+				<c:forEach items="${usuarios}" var="usuario">
+					<tr>
+						<td>${usuario.nome}</td>
+						<td>${usuario.login}</td>
+
+						<td>${usuario.tipo}</td>
+						<td>${usuario.situacao}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+</tags:pageTemplate>

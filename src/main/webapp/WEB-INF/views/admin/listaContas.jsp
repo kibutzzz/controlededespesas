@@ -6,34 +6,35 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 
-<tags:adminPageTemplate titulo="Contas Cadastradas ">
+<tags:pageTemplate titulo="Contas Cadastradas ">
 
 	<h1>Lista de Contas cadastradas no sistema</h1>
-	<c:if test="${not empty statusCadastro }">
-		<p>${statusCadastro}</p>
-	</c:if>
-	<table>
-		<thead>
-			<tr>
-				<td>Cliente</td>
-				<td>Colaborador</td>
-				<td>Data de Inicio</td>
-				<td>Situação</td>
-				<td>detalhes</td>
-			</tr>
-		</thead>
-
-		<tbody>
-			<c:forEach items="${contas}" var="conta">
+	
+	<div class="table-responsive">
+		<table class="table table-hover">
+			<thead>
 				<tr>
-					<td>${conta.cliente.nome}</td>
-					<td>${conta.usuario.nome}</td>
-					<td>${conta.dataInicio}</td>
-					<td>${conta.situacao}</td>
-					<td><a href="${s:mvcUrl('AC#detalheConta').arg(0, conta.id).build() }">detalhes</a></td>
-								 
+					<td>Cliente</td>
+					<td>Colaborador</td>
+					<td>Data de Inicio</td>
+					<td>Situação</td>
+					<td>detalhes</td>
 				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-</tags:adminPageTemplate>
+			</thead>
+
+			<tbody>
+				<c:forEach items="${contas}" var="conta">
+					<tr>
+						<td>${conta.cliente.nome}</td>
+						<td>${conta.usuario.nome}</td>
+						<td>${conta.dataInicio}</td>
+						<td>${conta.situacao}</td>
+						<td><a
+							href="${s:mvcUrl('AC#detalheConta').arg(0, conta.id).build() }">detalhes</a></td>
+
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+</tags:pageTemplate>
