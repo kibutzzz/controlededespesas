@@ -49,7 +49,7 @@ public class ColaboradorController {
 			Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
 			modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
  		} catch (NoResultException e) {
- 			return new ModelAndView("./../login"); 
+ 			return new ModelAndView("redirect: /login"); 
  		}
 
 
