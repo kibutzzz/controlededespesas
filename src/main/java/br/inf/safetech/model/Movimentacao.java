@@ -64,7 +64,7 @@ public class Movimentacao {
 	}
 
 	public BigDecimal getValor() {
-		return valor;
+		return valor.setScale(2);
 	}
 
 	public void setValor(BigDecimal valor) {
