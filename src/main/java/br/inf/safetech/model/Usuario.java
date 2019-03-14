@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +26,10 @@ public class Usuario implements UserDetails {
 	private String nome;
 	private String login;
 	private String senha;
+
+	@Transient
+	private String confirmaSenha;
+
 	private TipoUsuario tipo;
 	private SituacaoUsuario situacao;
 
@@ -60,6 +65,18 @@ public class Usuario implements UserDetails {
 		this.senha = senha;
 	}
 
+	public String getConfirmaSenha() {
+		return confirmaSenha;
+	}
+	
+	public void setConfirmaSenha(String confirmaSenha) {
+		this.confirmaSenha = confirmaSenha;
+	}
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
 	public TipoUsuario getTipo() {
 		return tipo;
 	}
@@ -74,6 +91,10 @@ public class Usuario implements UserDetails {
 
 	public void setSituacao(SituacaoUsuario situacao) {
 		this.situacao = situacao;
+	}
+	
+	public boolean senhasConfirmam() {
+		return senha.equals(confirmaSenha);
 	}
 
 	@Override
