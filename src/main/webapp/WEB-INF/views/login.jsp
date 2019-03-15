@@ -20,7 +20,7 @@
 
 </head>
 <body>
-
+	<%@ include file="../views/templates/statusAlertLogin.jsp"%>
 
 	<!-- TODO ver: https://stackoverflow.com/questions/41404076/spring-security-custom-login-error-messages -->
 	<form:form servletRelativeAction="/login" method="post"
