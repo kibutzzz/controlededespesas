@@ -11,7 +11,7 @@
 
 	
 	<div class="container ">
-		<h1 class="mt-4">Area administrativa</h1>
+		<h1 class="mt-4">Área administrativa</h1>
 		
 
 	</div>

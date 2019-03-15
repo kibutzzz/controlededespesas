@@ -10,7 +10,7 @@
 
 
 
-	<h1>Lista de Usuarios Cadastrados no sistema</h1>
+	<h1>Lista de Usuários Cadastrados no sistema</h1>
 	
 	<div class="table-responsive">
 		<table class="table table-hover">
