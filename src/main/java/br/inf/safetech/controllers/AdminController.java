@@ -109,6 +109,12 @@ public class AdminController {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 //		TODO verificar se o usuario já esta cadastrado
 
+		if(!usuario.senhasConfirmam()) {
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, 
+					"Os campos 'senha' e 'confirma senha' devem ser iguais"));
+			return new ModelAndView("redirect:/admin/usuarios/form");
+		}
+
 		String mensagemDeStatus = null;
 		StatusType tipo = null;
 		try {
@@ -288,7 +294,7 @@ public class AdminController {
 	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
-		System.out.println(wrapper.getContaId());
+		
 		ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 
 		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
@@ -399,7 +405,7 @@ public class AdminController {
 	public ModelAndView encerrarConta(EncerramentoContaWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:../.");
 
-		System.out.println(wrapper.getFormaDeEncerramento());
+		
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId());
 
 		// não permite encerramento caso alguma movimentação não esteja conciliada
