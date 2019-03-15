@@ -37,7 +37,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/**").permitAll()
 				.anyRequest().authenticated()
 				.and().formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/", false)
-				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
+				.and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+				.and().exceptionHandling().accessDeniedPage("/acessoNegado");
 	}
 
 	/**
