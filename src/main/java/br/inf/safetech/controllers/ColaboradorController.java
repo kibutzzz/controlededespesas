@@ -45,13 +45,12 @@ public class ColaboradorController {
 		ModelAndView modelAndView = new ModelAndView("colaborador/geral");
 
 		try {
-			
+
 			Usuario usuario = usuarioDao.buscarUsuarioPorId(usuarioLogado.getId());
 			modelAndView.addObject("contas", contaDespesaDao.listarContaPorUsuario(usuario));
- 		} catch (NoResultException e) {
- 			return new ModelAndView("redirect: /login"); 
- 		}
-
+		} catch (NoResultException e) {
+			return new ModelAndView("redirect: /login");
+		}
 
 		return modelAndView;
 	}
@@ -77,7 +76,8 @@ public class ColaboradorController {
 
 			// faz com que o usuario não tenha acesso a uma conta que não lhe pertence
 			if (conta.getUsuario().getId() != usuarioLogado.getId()) {
-				redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "A conta de id " + id + " pertence a outro usuário"));
+				redirectAttributes.addFlashAttribute("status",
+						new StatusInfo(StatusType.ALERTA, "A conta de id " + id + " pertence a outro usuário"));
 				return new ModelAndView("redirect:/colaborador");
 			}
 
@@ -212,5 +212,17 @@ public class ColaboradorController {
 		}
 
 	}
+
+	@RequestMapping("detalhes")
+	public ModelAndView detalhesUsuario(@AuthenticationPrincipal Usuario usuarioLogado) {
+		ModelAndView modelAndView = new ModelAndView("colaborador/usuario");
+		
+		modelAndView.addObject("colaborador", usuarioLogado);
+		
+		return modelAndView;
+	}
+
+
+	// TODO alterar senha
 
 }
