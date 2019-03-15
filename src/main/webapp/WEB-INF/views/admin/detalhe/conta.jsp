@@ -9,145 +9,150 @@
 
 
 <tags:pageTemplate titulo="Detalhe da conta ${conta.cliente.nome }">
+	<div class="card border-dark mb-3">
+		<%@include file="../../../views/templates/contaCardHeader.jsp"%>
+		<div class="card-body pt-2">
+			<div class="row ">
 
 
-	<h1>Conta</h1>
-	
-	<table>
-		<thead>
-			<tr>
-				<td>Cliente</td>
-				<td>Colaborador</td>
-				<td>Data de inicio</td>
-				<td>Data de Fim</td>
-				<td>Situação</td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>${conta.cliente.nome }</td>
-				<td>${conta.usuario.nome }</td>
-				<td>${conta.dataInicio }</td>
-				<td><c:if test="${not empty conta.dataFim}">${conta.dataFim }</c:if>
-				</td>
-				<td>${conta.situacao }</td>
-			</tr>
+				<c:if test="${conta.situacao == 'ATIVA' }">
+					<h4 class="col-12">Nova movimentação</h4>
+					<form:form class="col-12"
+						action="${s:mvcUrl('AC#cadastrarMovimentacao').build() }"
+						method="post">
+						<fieldset>
+							<div class="form-group row">
 
-		</tbody>
-	</table>
+								<div class="col-12 col-md-8">
+									<input autofocus type="text" class="form-control-plaintext px-2"
+										id="descricao" name="movimentacao.descricao" required
+										placeholder="descrição da movimentação">
+								</div>
 
-	<h1>Movimentações</h1>
-	<c:if test="${conta.situacao == 'ATIVA' }">
-		<form:form action="${s:mvcUrl('AC#cadastrarMovimentacao').build() }"
-			method="post">
-			<div>
-				<label for="descricao">Descricao</label> <input type="text"
-					id="descricao" name="movimentacao.descricao" required />
+								<div class="col-12 col-md-4">
+									<input type="text" class="form-control-plaintext px-2"
+										id="valor" name="movimentacao.valor" required
+										placeholder="R$ 0.00">
+								</div>
+
+							</div>
+
+							<div class="form-group row">
+
+								<div class="col-12 col-md-6">
+									<select id="tipo" name="movimentacao.tipo" class="form-control">
+										<c:forEach items="${tipos }" var="tipo">
+											<option value="${tipo }">${tipo }</option>
+										</c:forEach>
+									</select>
+								</div>
+								<input type="hidden" name="conta.id" value="${conta.id }" />
+								<div class="col-12 col-md-6">
+									<button type="submit" class="btn btn-block btn-primary">Cadastrar
+										Movimentacao</button>
+								</div>
+							</div>
+
+						</fieldset>
+					</form:form>
+				</c:if>
+				<h2 class="col-12">Movimentações</h2>
 			</div>
-			<div>
-				<label for="valor">Valor</label> <input type="text" id="valor"
-					name="movimentacao.valor" required />
-			</div>
-			<div>
-				<label for="tipo">Tipo</label> <select id="tipo"
-					name="movimentacao.tipo">
-					<c:forEach items="${tipos }" var="tipo">
-						<option value="${tipo }">${tipo }</option>
-					</c:forEach>
-				</select>
-			</div>
-			<input type="hidden" name="conta.id" value="${conta.id }" />
 
-			<button type="submit">Cadastrar Movimentacao</button>
+			<div class="table-responsive">
+				<table class="table">
+					<thead>
+						<tr>
+							<td class="px-1">Tipo</td>
+							<td class="px-1">Descrição</td>
+							<td class="px-1">Valor</td>
+							<td class="px-1">Conciliada</td>
+							<td class="px-1">Categoria</td>
 
-		</form:form>
-	</c:if>
-	<table>
-		<thead>
-			<tr>
-				<td>Tipo</td>
-				<td>Descrição</td>
-				<td>Valor</td>
-				<td>Conciliada</td>
-				<td>Categoria</td>
-
-				<td>Editar</td>
-				<td>Excluir</td>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${conta.movimentacoes }" var="movimentacao">
-				<tr>
-					<form:form action="${s:mvcUrl('AC#editarMovimentacao').build() }"
-						method="POST">
-						<input type="hidden" name="movimentacao.id"
-							value="${movimentacao.id }">
-						<td><select name="movimentacao.tipo">
-								<c:forEach items="${tipos }" var="tipo">
-									<option value="${tipo }"
-										<c:if test="${ tipo == movimentacao.tipo }">
+							<td class="px-1">Editar</td>
+							<td class="px-1">Excluir</td>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach items="${conta.movimentacoes }" var="movimentacao">
+							<tr class="my-5">
+								<form:form
+									action="${s:mvcUrl('AC#editarMovimentacao').build() }"
+									method="POST">
+									<input type="hidden" name="movimentacao.id"
+										value="${movimentacao.id }">
+									<td class="py-0 px-1" ><select class="form-control px-2" name="movimentacao.tipo">
+											<c:forEach items="${tipos }" var="tipo">
+												<option value="${tipo }"
+													<c:if test="${ tipo == movimentacao.tipo }">
 										selected 
 										</c:if>>${tipo }</option>
-								</c:forEach>
+											</c:forEach>
 
-						</select></td>
-						<td><input name="movimentacao.descricao" type="text"
-							value="${movimentacao.descricao }" /></td>
-						<td><input name="movimentacao.valor" type="text"
-							value="${movimentacao.valor}" /></td>
+									</select></td>
+									<td class="py-0 px-1"><input class="form-control-plaintext px-2" name="movimentacao.descricao" type="text"
+										value="${movimentacao.descricao }" /></td>
+									<td class="py-0 px-1"><input class="form-control-plaintext px-2" name="movimentacao.valor" type="text"
+										value="${movimentacao.valor}" /></td>
 
-						<td><select name="movimentacao.conciliada">
-								<c:forEach items="${conciliacao }" var="conciliada">
-									<option value="${conciliada }"
-										<c:if test="${ conciliada == movimentacao.conciliada }">
+									<td class="py-0 px-1"><select class="form-control px-2"name="movimentacao.conciliada">
+											<c:forEach items="${conciliacao }" var="conciliada">
+												<option value="${conciliada }"
+													<c:if test="${ conciliada == movimentacao.conciliada }">
 										selected 
 										</c:if>>${conciliada }</option>
-								</c:forEach>
+											</c:forEach>
 
-						</select></td>
-						<td><select name="movimentacao.categoria">
-								<c:forEach items="${categorias }" var="categoria">
-									<option value="${categoria }"
-										<c:if test="${ categoria == movimentacao.categoria }">
+									</select></td>
+									<td class="py-0 px-1"><select class="form-control px-2" name="movimentacao.categoria">
+											<c:forEach items="${categorias }" var="categoria">
+												<option value="${categoria }"
+													<c:if test="${ categoria == movimentacao.categoria }">
 										selected 
 										</c:if>>${categoria }</option>
-								</c:forEach>
+											</c:forEach>
 
-						</select></td> <input type="hidden" name="contaId" value="${conta.id }" />
+									</select></td>
+									<input type="hidden" name="contaId" value="${conta.id }" />
 
-						<td><button
-								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
-								type="submit">Editar</button></td>
-					</form:form>
-					<td><form:form
-							action="${s:mvcUrl('AC#excluirMovimentacao').build() }"
-							method="POST">
-							<input type="hidden" name="contaId" value="${conta.id }" /> <input
-								type="hidden" name="movimentacao.id" value="${movimentacao.id }">
-							<button
-								<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
-								type="submit">Excluir</button>
-						</form:form></td>
+									<td class="py-0 px-1"><button class="btn btn-warning"
+											<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
+											type="submit">Editar</button></td>
+								</form:form>
+								<td class="py-0 px-1"><form:form
+										action="${s:mvcUrl('AC#excluirMovimentacao').build() }"
+										method="POST">
+										<input type="hidden" name="contaId" value="${conta.id }" />
+										<input type="hidden" name="movimentacao.id"
+											value="${movimentacao.id }">
+										<button class="btn btn-danger"
+											<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
+											type="submit">Excluir</button>
+									</form:form></td>
 
 
-				</tr>
-			</c:forEach>
+							</tr>
+						</c:forEach>
 
-		</tbody>
+					</tbody>
 
-		<tfoot>
-			<tr>
-				<td colspan="2">total</td>
-				<td>${conta.saldoDisponivel }</td>
-				<td><form action="${s:mvcUrl('AC#confirmarEncerramento').build() }">
-						<input type="hidden" name="id" value="${conta.id }">
-						<c:if test="${conta.situacao == 'ATIVA' }">
-						<button
-							<c:if test="${not conta.movimentacoesEstaoConciliadas }">disabled</c:if>>Encerrar
-							conta</button>
-							</c:if>
-					</form></td>
-			</tr>
-		</tfoot>
-	</table>
+					<tfoot>
+						<tr>
+							<td colspan="4">Total</td>
+							<td>${conta.saldoDisponivel }</td>
+							<td><form
+									action="${s:mvcUrl('AC#confirmarEncerramento').build() }">
+									<input type="hidden" name="id" value="${conta.id }">
+									<c:if test="${conta.situacao == 'ATIVA' }">
+										<button class="btn btn-danger"
+											<c:if test="${not conta.movimentacoesEstaoConciliadas }">disabled</c:if>>Encerrar
+											conta</button>
+									</c:if>
+								</form></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
 </tags:pageTemplate>
