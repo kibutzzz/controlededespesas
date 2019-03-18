@@ -44,8 +44,16 @@
 
 		</ul>
 		<ul class="navbar-nav ml-auto">
-			<li class=" nav-item"><a class="nav-link text-justify"
-				href="#"><security:authentication property="principal" var="usuario"/>Olá, ${usuario.nome } </a></li>
+			<security:authorize access="hasRole('ROLE_ADMIN')">
+
+				<li class=" nav-item"><a class="nav-link text-justify" href="#"><security:authentication
+							property="principal" var="usuario" />Olá, ${usuario.nome } </a></li>
+			</security:authorize>
+			<security:authorize access="hasRole('ROLE_COLABORADOR')">
+				
+				<li class=" nav-item"><a class="nav-link text-justify" href="<c:url value="/colaborador/detalhes"/>"><security:authentication
+							property="principal" var="usuario" />Olá, ${usuario.nome } </a></li>
+			</security:authorize>
 			<li class=" nav-item"><a class="nav-link text-justify"
 				href="<c:url value="/logout" />">Logout</a></li>
 		</ul>
