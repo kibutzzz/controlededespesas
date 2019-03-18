@@ -26,6 +26,11 @@
 * {
 	transition: .3s ease-out;
 }
+
+td {
+	white-space: nowrap;
+	width: auto;
+}
 </style>
 </head>
 <body>
@@ -36,11 +41,16 @@
 		<jsp:doBody />
 	</div>
 </body>
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
 	crossorigin="anonymous"></script>
 <script type="text/javascript"
 	src="${contextPath }resources/js/bootstrap.min.js"></script>
-	
+<script type="text/javascript">
+$(document).ready(() => {
+	setTimeout(() => {
+		$("#alert-remove").fadeOut(300, () => $(this).remove());
+	}, 3000);
+});
+</script>
 <jsp:invoke fragment="selectize" />
 </html>
