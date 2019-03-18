@@ -23,6 +23,7 @@ import br.inf.safetech.daos.UsuarioDAO;
 import br.inf.safetech.formwrapper.CadastroMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EdicaoMovimentacaoWrapper;
 import br.inf.safetech.formwrapper.EncerramentoContaWrapper;
+import br.inf.safetech.formwrapper.FiltroContaWrapper;
 import br.inf.safetech.helper.GeradorDeDados;
 import br.inf.safetech.helper.StatusInfo;
 import br.inf.safetech.helper.StatusType;
@@ -55,6 +56,19 @@ public class AdminController {
 	public ModelAndView adminOverview() {
 		ModelAndView modelAndView = new ModelAndView("admin/geral");
 
+		modelAndView.addObject("colaboradoresDisponiveis", (usuarioDao.listarColaboradoresAtivos()));
+		modelAndView.addObject("clientesDisponiveis", clientesDao.listar());
+		modelAndView.addObject("situacoes", SituacaoConta.values());
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="contas", method=RequestMethod.POST)
+	public ModelAndView contasFiltradas(FiltroContaWrapper wrapper) {
+		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
+		
+		modelAndView.addObject("contas", contaDespesaDao.buscarContaFiltrada(wrapper));
+		
 		return modelAndView;
 	}
 
