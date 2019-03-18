@@ -64,10 +64,16 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value="contas", method=RequestMethod.POST)
-	public ModelAndView contasFiltradas(FiltroContaWrapper wrapper) {
+	public ModelAndView contasFiltradas(FiltroContaWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
-		
-		modelAndView.addObject("contas", contaDespesaDao.buscarContaFiltrada(wrapper));
+		try {
+			modelAndView.addObject("contas", contaDespesaDao.buscarContaFiltrada(wrapper));
+		} catch (RuntimeException e) {
+			ModelAndView mav = new ModelAndView("redirect:/admin/");
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, e.getLocalizedMessage()));
+			
+			return mav;
+		}
 		
 		return modelAndView;
 	}
