@@ -75,7 +75,8 @@ public class ContaDespesaDAO {
 	}
 
 	public List<ContaDespesa> buscarContaFiltrada(FiltroContaWrapper wrapper) {
-
+		
+		
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
 		CriteriaQuery<ContaDespesa> query = criteriaBuilder.createQuery(ContaDespesa.class);
 
@@ -87,40 +88,43 @@ public class ContaDespesaDAO {
 		Path<Calendar> dataInicioPath = root.<Calendar>get("dataInicio");
 		Path<Calendar> dataFimPath = root.<Calendar>get("dataFim");
 		Path<SituacaoConta> situacaoPath = root.<SituacaoConta>get("situacao");
-		
-		if(!(wrapper.getColaborador() == null)) {
+
+		if (!(wrapper.getColaborador() == null) && wrapper.getColaborador().getId() != 0) {
 			System.out.println("filtrando colaborador " + wrapper.getColaborador());
-			
+
 			Predicate usuarioIgual = criteriaBuilder.equal(usuarioPath, wrapper.getColaborador().getId());
 			predicates.add(usuarioIgual);
 		}
-		
-		if(! (wrapper.getCliente() == null)) {
+
+		if (!(wrapper.getCliente() == null) && wrapper.getCliente().getId() != 0) {
 			System.out.println("filtrando cliente " + wrapper.getCliente());
 			Predicate clienteIgual = criteriaBuilder.equal(clientePath, wrapper.getCliente().getId());
 			predicates.add(clienteIgual);
 		}
-		
-		if(!(wrapper.getDataInicio() == null)) {
-			System.out.println("filtrando dataInicio");
-			Predicate dataInicioMaiorQue = criteriaBuilder.greaterThanOrEqualTo(dataInicioPath, wrapper.getDataInicio());
+
+		if (!(wrapper.getDataInicio() == null) && !(wrapper.getDataInicio() == "")) {
+			System.out.println("filtrando dataInicio " + wrapper.getDataInicio());
+			Predicate dataInicioMaiorQue = criteriaBuilder.greaterThanOrEqualTo(dataInicioPath,
+					wrapper.createCalendar(wrapper.getDataInicio()));
 			predicates.add(dataInicioMaiorQue);
 		}
-		
-		if(!(wrapper.getDataInicio() == null)) {
-			System.out.println("filtrando dataFim");
-			Predicate dataFimMaiorQue = criteriaBuilder.greaterThanOrEqualTo(dataFimPath, wrapper.getDataFim());
+
+		if (!(wrapper.getDataFim() == null) && !(wrapper.getDataFim() == "")) {
+			System.out.println("filtrando dataFim " + wrapper.getDataFim());
+			Predicate dataFimMaiorQue = criteriaBuilder.greaterThanOrEqualTo(dataFimPath,
+					wrapper.createCalendar(wrapper.getDataFim()));
 			predicates.add(dataFimMaiorQue);
 		}
-		
-		if(!(wrapper.getSituacao() == null)) {
+
+		if (!(wrapper.getSituacao() == null)) {
 			System.out.println("filtrando situação");
 			Predicate situacaoIgual = criteriaBuilder.equal(situacaoPath, wrapper.getSituacao());
 			predicates.add(situacaoIgual);
 		}
-		
 
-		query.where((Predicate[]) predicates.toArray(new Predicate[0]));
+		if (predicates.size() > 0) {
+			query.where((Predicate[]) predicates.toArray(new Predicate[0]));
+		}
 		List<ContaDespesa> contas = manager.createQuery(query).getResultList();
 		System.out.println(contas.size());
 		return contas;
