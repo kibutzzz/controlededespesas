@@ -26,11 +26,11 @@
 
 	<jsp:body>
 	
-	<div class="container ">
-		<h1 class="mt-4">Área administrativa</h1>
-		<%@ include file="../templates/formFiltroAdmin.jsp"%>
+	
+	<h1 class="mt-4">Área administrativa</h1>
+	<%@ include file="../templates/formFiltroAdmin.jsp"%>
 
-	</div>
+	
 
 
 	<!-- 	TODO desenvolver area administrativa  -->
