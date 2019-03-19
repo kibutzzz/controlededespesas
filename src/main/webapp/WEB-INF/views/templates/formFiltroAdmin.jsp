@@ -5,7 +5,7 @@
 
 		<div class="col-12 col-md-6 ">
 			<select id="colaborador" name="colaborador.id" class="form-control">
-				<option disabled selected value>selecione</option>
+				<option disabled selected value="0">selecione</option>
 				<c:forEach items="${colaboradoresDisponiveis}" var="colaborador">
 					<option value="${colaborador.id }">${colaborador.nome }</option>
 				</c:forEach>
@@ -14,7 +14,7 @@
 		<div class="col-12 col-md-6 ">
 
 			<select id="cliente" name="cliente.id" class="form-control">
-				<option disabled selected value>selecione</option>
+				<option disabled selected value="0">selecione</option>
 
 				<c:forEach items="${clientesDisponiveis}" var="cliente">
 					<option value="${cliente.id }">${cliente.nome }</option>
@@ -24,12 +24,12 @@
 	</div>
 	<div class="row">
 		<div class="col-12 col-md-3 ">
-			<!-- 			<input type="text" class="form-control" name="dataInicio" -->
-			<!-- 				placeholder="data de inicio" /> -->
+						<input type="text" class="form-control" name="dataInicio"
+							placeholder="data de inicio" />
 		</div>
 		<div class="col-12 col-md-3 ">
-			<!-- 			<input type="text" class="form-control" name="dataFim" -->
-			<!-- 				placeholder="data de fim" /> -->
+						<input type="text" class="form-control" name="dataFim"
+							placeholder="data de fim" />
 		</div>
 		<div class="col-12 col-md-3 ">
 			<select name="situacao" class="form-control">
