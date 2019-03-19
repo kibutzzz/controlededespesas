@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
-	<a class="navbar-brand" href="${s:mvcUrl('HC#index').build() }">Controle
-		de despesas</a>
+	<a class="navbar-brand py-0" href="${s:mvcUrl('HC#index').build() }" ><img
+		class="" src="<c:url value='/resources/imagens/logo_safe_pequeno.png'/>" alt="Safetech"
+		style="max-width: 100%; max-height: 40px; filter: brightness(0) invert(100%)"></a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse"
 		data-target="#navbarColor01" aria-controls="navbarColor01"
 		aria-expanded="false" aria-label="Toggle navigation">
@@ -50,8 +51,9 @@
 							property="principal" var="usuario" />Olá, ${usuario.nome } </a></li>
 			</security:authorize>
 			<security:authorize access="hasRole('ROLE_COLABORADOR')">
-				
-				<li class=" nav-item"><a class="nav-link text-justify" href="<c:url value="/colaborador/detalhes"/>"><security:authentication
+
+				<li class=" nav-item"><a class="nav-link text-justify"
+					href="<c:url value="/colaborador/detalhes"/>"><security:authentication
 							property="principal" var="usuario" />Olá, ${usuario.nome } </a></li>
 			</security:authorize>
 			<li class=" nav-item"><a class="nav-link text-justify"
