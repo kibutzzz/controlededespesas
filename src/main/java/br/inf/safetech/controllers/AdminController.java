@@ -60,6 +60,8 @@ public class AdminController {
 		modelAndView.addObject("clientesDisponiveis", clientesDao.listar());
 		modelAndView.addObject("situacoes", SituacaoConta.values());
 		
+		modelAndView.addObject("ultimasContasAbertas", contaDespesaDao.buscarUltimasContasAbertas());
+		
 		return modelAndView;
 	}
 	
@@ -68,6 +70,7 @@ public class AdminController {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
 		try {
 			modelAndView.addObject("contas", contaDespesaDao.buscarContaFiltrada(wrapper));
+			
 		} catch (RuntimeException e) {
 			ModelAndView mav = new ModelAndView("redirect:/admin/");
 			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, e.getLocalizedMessage()));
