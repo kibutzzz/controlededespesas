@@ -29,7 +29,8 @@
 	
 	<h1 class="mt-4">Área administrativa</h1>
 	<%@ include file="../templates/formFiltroAdmin.jsp"%>
-
+	
+	<tags:cardContaTemplate contas="${ultimasContasAbertas }" metodoUrl="AC#detalheConta"></tags:cardContaTemplate>
 	
 
 
