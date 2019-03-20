@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,7 +39,7 @@ public class ContaDespesa {
 	@DateTimeFormat
 	private Calendar dataFim;
 
-	@OneToMany
+	@OneToMany(fetch=FetchType.EAGER)
 	private List<Movimentacao> movimentacoes = new ArrayList<Movimentacao>();
 
 	public int getId() {
@@ -113,6 +114,8 @@ public class ContaDespesa {
 
 	public BigDecimal getSaldoDisponivel() {
 		BigDecimal total = new BigDecimal("0.00");
+		
+		
 		for (Movimentacao movimentacao : this.movimentacoes) {
 			if (movimentacao.getTipo() == TipoMovimentacao.CREDITO) {
 				total = total.add(movimentacao.getValor());
