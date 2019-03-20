@@ -15,7 +15,7 @@ public class GeradorDeDados {
 	public List<Cliente> gerarClientes() {
 		List<Cliente> clientes = new ArrayList<Cliente>();
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 6; i++) {
 			clientes.add(new Cliente());
 		}
 
@@ -24,10 +24,10 @@ public class GeradorDeDados {
 		clientes.get(2).setNome("Xis do Vini");
 		clientes.get(3).setNome("Bottero");
 		clientes.get(4).setNome("Azaleia");
+		clientes.get(5).setNome("Empresa com o nome muito grande para o card");
 
 		return clientes;
 	}
-
 
 	public List<Usuario> gerarUsuarios() {
 		List<Usuario> usuarios = new ArrayList<Usuario>();
@@ -36,6 +36,8 @@ public class GeradorDeDados {
 				TipoUsuario.COLABORADOR));
 		usuarios.add(
 				criaUsuario("mateus.santos", "Mateus Santos", "senha", SituacaoUsuario.ATIVO, TipoUsuario.COLABORADOR));
+		usuarios.add(criaUsuario("lucas.prinheiro", "Lucas Pinheiro", "nodejs", SituacaoUsuario.ATIVO,
+				TipoUsuario.COLABORADOR));
 		usuarios.add(criaUsuario("marcia", "marcia", "admin", SituacaoUsuario.ATIVO, TipoUsuario.ADMIN));
 
 		usuarios.add(criaUsuario("usuario.inativo", "usuario demitido", "123", SituacaoUsuario.INATIVO,
