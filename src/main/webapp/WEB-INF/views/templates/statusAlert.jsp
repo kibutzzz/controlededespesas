@@ -1,7 +1,9 @@
 <%@ tag import="br.inf.safetech.helper.StatusType"%>
 
 
+
 <c:if test="${not empty status }">
+
 	<div class="container fixed-top mt-5 px-5" id="alert-remove">
 		<c:if test="${status.type == StatusType.SUCESSO }">
 			<div class="alert alert-dismissible alert-success">
