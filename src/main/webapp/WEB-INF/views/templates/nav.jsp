@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
 	<a class="navbar-brand py-0" href="${s:mvcUrl('HC#index').build() }" ><img
 		class="" src="<c:url value='/resources/imagens/logo_safe_pequeno.png'/>" alt="Safetech"
 		style="max-width: 100%; max-height: 40px; filter: brightness(0) invert(100%)"></a>
