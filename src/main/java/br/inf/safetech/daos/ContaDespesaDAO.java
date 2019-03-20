@@ -50,7 +50,7 @@ public class ContaDespesaDAO {
 	 */
 	public ContaDespesa buscarContaPeloId(Integer id) throws PersistenceException {
 
-		return manager.createQuery("select c from ContaDespesa c left join fetch c.movimentacoes where c.id = :pId",
+		return manager.createQuery("select c from ContaDespesa c where c.id = :pId",
 				ContaDespesa.class).setParameter("pId", id).getSingleResult();
 	}
 
@@ -61,7 +61,7 @@ public class ContaDespesaDAO {
 	 * @return lista de contas associada ao usuario
 	 */
 	public List<ContaDespesa> listarContaPorUsuario(Usuario usuario) {
-		return manager.createQuery("select c from ContaDespesa c where c.usuario = :pUsuario", ContaDespesa.class)
+		return manager.createQuery("select distinct(c) from ContaDespesa c where c.usuario = :pUsuario", ContaDespesa.class)
 				.setParameter("pUsuario", usuario).getResultList();
 	}
 
@@ -75,8 +75,7 @@ public class ContaDespesaDAO {
 	}
 
 	public List<ContaDespesa> buscarContaFiltrada(FiltroContaWrapper wrapper) {
-		
-		
+
 		CriteriaBuilder criteriaBuilder = manager.getCriteriaBuilder();
 		CriteriaQuery<ContaDespesa> query = criteriaBuilder.createQuery(ContaDespesa.class);
 
@@ -129,5 +128,13 @@ public class ContaDespesaDAO {
 		System.out.println(contas.size());
 		return contas;
 	}
+									
+	public List<ContaDespesa> buscarUltimasContasAbertas() {
+		return manager.createQuery(
+				"select distinct(c) from ContaDespesa c where c.situacao = :pSituacao order by c.dataInicio", ContaDespesa.class)
+				.setParameter("pSituacao", SituacaoConta.ATIVA).setMaxResults(4).getResultList();
+	}
+
+	
 
 }
