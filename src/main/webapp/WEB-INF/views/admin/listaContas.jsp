@@ -8,33 +8,9 @@
 
 <tags:pageTemplate titulo="Contas Cadastradas ">
 
-	<h1>Lista de Contas cadastradas no sistema</h1>
+	<h1>Contas Cadastradas</h1>
 	
-	<div class="table-responsive">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<td>Cliente</td>
-					<td>Colaborador</td>
-					<td>Data de Inicio</td>
-					<td>Situação</td>
-					<td>detalhes</td>
-				</tr>
-			</thead>
-
-			<tbody>
-				<c:forEach items="${contas}" var="conta">
-					<tr>
-						<td>${conta.cliente.nome}</td>
-						<td>${conta.usuario.nome}</td>
-						<td>${conta.dataInicio}</td>
-						<td>${conta.situacao}</td>
-						<td><a
-							href="${s:mvcUrl('AC#detalheConta').arg(0, conta.id).build() }">detalhes</a></td>
-
-					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
-	</div>
+	<%@ include file="../templates/formFiltroAdmin.jsp" %>
+	<tags:cardContaTemplate contas="${contas }" metodoUrl="AC#detalheConta"></tags:cardContaTemplate>
+	
 </tags:pageTemplate>
