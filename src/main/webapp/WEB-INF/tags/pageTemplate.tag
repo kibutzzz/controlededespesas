@@ -18,7 +18,7 @@
 
 <link rel="stylesheet"
 	href="${contextPath }resources/css/bootstrap.min.css">
-
+<link href="${contextPath }resources/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
 <title>${titulo }| Controle de despesas</title>
 
 <style rel="stylesheet">

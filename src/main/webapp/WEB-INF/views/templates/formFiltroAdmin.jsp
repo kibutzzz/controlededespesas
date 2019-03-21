@@ -3,7 +3,7 @@
 <h3 class="d-inline-block">filtro</h3>
 	<button class="btn btn-sm btn-primary" type="button"
 		data-toggle="collapse" data-target="#collapse-filtro"
-		aria-expanded="false" aria-controls="collapseExample" style="font-size: 1.3em;">&#x21C5;
+		aria-expanded="false" aria-controls="collapseExample" style="font-size: 1.3em;"><span class="oi oi-elevator"></span>
 		
 	</button>
 </div>
