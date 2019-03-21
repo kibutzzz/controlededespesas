@@ -10,7 +10,7 @@
 
 
 <tags:pageTemplate titulo="Area administrativa">
-	<jsp:attribute name="selectize">
+	<jsp:attribute name="extraScripts">
 	<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.js"></script>
 	<script>
@@ -19,6 +19,8 @@
 			sortField : 'text',
 			placeholder : "Selecione"
 		});
+
+		$('.date-mask').mask('00/00/0000');
 	</script>
 	<link rel="stylesheet" href="${cssPath }selectize.default.css">
 	</jsp:attribute>
@@ -30,7 +32,8 @@
 	<h1 class="mt-4">Área administrativa</h1>
 	<%@ include file="../templates/formFiltroAdmin.jsp"%>
 	
-	<tags:cardContaTemplate contas="${ultimasContasAbertas }" metodoUrl="AC#detalheConta"></tags:cardContaTemplate>
+	<tags:cardContaTemplate contas="${ultimasContasAbertas }"
+			metodoUrl="AC#detalheConta"></tags:cardContaTemplate>
 	
 
 

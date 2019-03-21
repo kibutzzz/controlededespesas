@@ -37,10 +37,10 @@
 
 			<div class="col-12 col-md-3 ">
 				<label>Data de inicio</label> <input type="text"
-					class="form-control" name="dataInicio" placeholder="data de inicio" />
+					class="form-control date-mask" name="dataInicio" placeholder="data de inicio" />
 			</div>
 			<div class="col-12 col-md-3 ">
-				<label>Data de fim</label> <input type="text" class="form-control"
+				<label>Data de fim</label> <input type="text" class="form-control date-mask"
 					name="dataFim" placeholder="data de fim" />
 			</div>
 			<div class="col-12 col-md-3 ">

@@ -10,7 +10,7 @@
 
 <tags:pageTemplate titulo="Cadastro de conta ">
 
-	<jsp:attribute name="selectize">
+	<jsp:attribute name="extraScripts">
 	<script
 			src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.js"></script>
 	<script>
