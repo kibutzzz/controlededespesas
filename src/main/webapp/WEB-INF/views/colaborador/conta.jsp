@@ -48,74 +48,12 @@
 				</c:if>
 
 				<h2 class="col-12">Movimentações</h2>
-
 			</div>
 
-			<div class="table-responsive">
-				<table class="table">
-					<thead>
-						<tr>
-							<td class="px-1">Tipo</td>
-							<td class="px-1">Descrição</td>
-							<td class="px-1">Valor</td>
+			
+					<tags:movimentacoesColaborador conta="${conta }"></tags:movimentacoesColaborador>
+				
 
-							<td class="px-1">Editar</td>
-							<td class="px-1">Excluir</td>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${conta.movimentacoes }" var="movimentacao">
-							<tr>
-								<form:form
-									action="${s:mvcUrl('CC#editarMovimentacao').build() }"
-									method="POST">
-									<input type="hidden" name="movimentacao.id"
-										value="${movimentacao.id }"
-										>
-									<td class="py-0 px-1 align-middle">${movimentacao.tipo }</td>
-									<td class="py-0 px-1"><input type="text"
-										name="movimentacao.descricao"
-										value="${movimentacao.descricao }"
-										class="form-control-plaintext px-2" /></td>
-									<td class="py-0 px-1"><input type="text"
-										name="movimentacao.valor" value="${movimentacao.valor }"
-										class="form-control-plaintext px-2" /></td>
-									<!-- TODO expandir o tamanho disponivel para este campo -->
-									<input type="hidden" name="contaId" value="${conta.id }" />
-
-									<!-- TODO implementar metodo para verificar se a movimentação pode ser editada
-									separado da view -->
-									<td class="py-0 px-1"><button type="submit"
-											class="btn btn-warning"
-											<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
-											|| movimentacao.cadastradoPor == 'ADMIN'
-											|| conta.situacao == 'INATIVA'}">disabled</c:if>>Editar</button></td>
-								</form:form>
-								<td class="py-0 px-1"><form:form
-										action="${s:mvcUrl('CC#excluirMovimentacao').build() }"
-										method="POST">
-										<input type="hidden" name="contaId" value="${conta.id }" />
-										<input type="hidden" name="movimentacao.id"
-											value="${movimentacao.id }">
-										<button class="btn btn-danger"
-											<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
-											|| movimentacao.cadastradoPor == 'ADMIN'
-											|| conta.situacao == 'INATIVA'}">disabled</c:if>
-											type="submit">Excluir</button>
-									</form:form></td>
-
-							</tr>
-						</c:forEach>
-					</tbody>
-
-					<tfoot>
-						<tr>
-							<td colspan="4">total</td>
-							<td>R$${conta.saldoDisponivel }</td>
-						</tr>
-					</tfoot>
-				</table>
-			</div>
 		</div>
 	</div>
 
