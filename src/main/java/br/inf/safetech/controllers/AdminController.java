@@ -78,6 +78,10 @@ public class AdminController {
 			return mav;
 		}
 		
+		modelAndView.addObject("colaboradoresDisponiveis", (usuarioDao.listarColaboradoresAtivos()));
+		modelAndView.addObject("clientesDisponiveis", clientesDao.listar());
+		modelAndView.addObject("situacoes", SituacaoConta.values());
+		
 		return modelAndView;
 	}
 
@@ -288,7 +292,7 @@ public class AdminController {
 
 		if (wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
 			redirectAttributes.addFlashAttribute("status",
-					new StatusInfo(StatusType.ERRO, "Não é possivel cadastrar novas movimentaçõespor que a conta está encerrada!"));
+					new StatusInfo(StatusType.ERRO, "Não é possivel cadastrar novas movimentações por que a conta está encerrada!"));
 			return modelAndView;
 		}
 
