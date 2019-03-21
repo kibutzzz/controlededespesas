@@ -1,6 +1,6 @@
 
 <%@ attribute name="titulo" required="true"%>
-<%@ attribute name="selectize" fragment="true"%>
+<%@ attribute name="extraScripts" fragment="true"%>
 
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -51,5 +51,7 @@ $(document).ready(() => {
 	}, 3000);
 });
 </script>
-<jsp:invoke fragment="selectize" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.js"></script>
+<jsp:invoke fragment="extraScripts" />
 </html>
