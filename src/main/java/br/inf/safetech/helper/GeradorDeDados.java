@@ -38,7 +38,7 @@ public class GeradorDeDados {
 				criaUsuario("mateus.santos", "Mateus Santos", "senha", SituacaoUsuario.ATIVO, TipoUsuario.COLABORADOR));
 		usuarios.add(criaUsuario("lucas.prinheiro", "Lucas Pinheiro", "nodejs", SituacaoUsuario.ATIVO,
 				TipoUsuario.COLABORADOR));
-		usuarios.add(criaUsuario("marcia", "marcia", "admin", SituacaoUsuario.ATIVO, TipoUsuario.ADMIN));
+		usuarios.add(criaUsuario("admin", "admin", "admin", SituacaoUsuario.ATIVO, TipoUsuario.ADMIN));
 
 		usuarios.add(criaUsuario("usuario.inativo", "usuario demitido", "123", SituacaoUsuario.INATIVO,
 				TipoUsuario.COLABORADOR));
