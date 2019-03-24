@@ -62,7 +62,18 @@
 			
 			
 			<tags:movimentacoesAdmin conta="${conta }"></tags:movimentacoesAdmin>
-
+			<div class="row col-12">
+				<div class="col-12">
+					<form:form action="${s:mvcUrl('AC#gerarRelatorioGeral').build() }" method="post">
+						<input type="hidden" name="contaId" value="${conta.id }"/>
+						<button type="submit" class="btn btn-block btn-primary">Gerar Relatorio Administrativo</button>
+					</form:form>
+				</div>
+				
+				<div class="col-12">
+				
+				</div>
+			</div>
 
 		</div>
 	</div>
