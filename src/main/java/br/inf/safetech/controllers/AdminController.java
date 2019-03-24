@@ -1,12 +1,20 @@
 package br.inf.safetech.controllers;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.PersistenceException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +45,12 @@ import br.inf.safetech.model.SituacaoUsuario;
 import br.inf.safetech.model.TipoMovimentacao;
 import br.inf.safetech.model.TipoUsuario;
 import br.inf.safetech.model.Usuario;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @Controller
 @RequestMapping("/admin")
@@ -59,29 +73,29 @@ public class AdminController {
 		modelAndView.addObject("colaboradoresDisponiveis", (usuarioDao.listarColaboradoresAtivos()));
 		modelAndView.addObject("clientesDisponiveis", clientesDao.listar());
 		modelAndView.addObject("situacoes", SituacaoConta.values());
-		
+
 		modelAndView.addObject("ultimasContasAbertas", contaDespesaDao.buscarUltimasContasAbertas());
-		
+
 		return modelAndView;
 	}
-	
-	@RequestMapping(value="contas", method=RequestMethod.POST)
+
+	@RequestMapping(value = "contas", method = RequestMethod.POST)
 	public ModelAndView contasFiltradas(FiltroContaWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("admin/listaContas");
 		try {
 			modelAndView.addObject("contas", contaDespesaDao.buscarContaFiltrada(wrapper));
-			
+
 		} catch (RuntimeException e) {
 			ModelAndView mav = new ModelAndView("redirect:/admin/");
 			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, e.getLocalizedMessage()));
-			
+
 			return mav;
 		}
-		
+
 		modelAndView.addObject("colaboradoresDisponiveis", (usuarioDao.listarColaboradoresAtivos()));
 		modelAndView.addObject("clientesDisponiveis", clientesDao.listar());
 		modelAndView.addObject("situacoes", SituacaoConta.values());
-		
+
 		return modelAndView;
 	}
 
@@ -136,9 +150,9 @@ public class AdminController {
 		ModelAndView modelAndView = new ModelAndView("redirect:./");
 //		TODO verificar se o usuario já esta cadastrado
 
-		if(!usuario.senhasConfirmam()) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, 
-					"Os campos 'senha' e 'confirma senha' devem ser iguais"));
+		if (!usuario.senhasConfirmam()) {
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ALERTA, "Os campos 'senha' e 'confirma senha' devem ser iguais"));
 			return new ModelAndView("redirect:/admin/usuarios/form");
 		}
 
@@ -201,8 +215,8 @@ public class AdminController {
 
 		if (clientesDisponiveis.size() == 0 || colaboradoresDisponiveis.size() == 0) {
 			redirectAttributes.addFlashAttribute("status",
-					 new StatusInfo(StatusType.ALERTA, "Cadastro de contas não é possivel devido a "
-					 		+ "falta de clientes ou colaboradores ativos cadastrados"));
+					new StatusInfo(StatusType.ALERTA, "Cadastro de contas não é possivel devido a "
+							+ "falta de clientes ou colaboradores ativos cadastrados"));
 
 		}
 
@@ -291,8 +305,8 @@ public class AdminController {
 		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.ADMIN);
 
 		if (wrapper.getConta().getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status",
-					new StatusInfo(StatusType.ERRO, "Não é possivel cadastrar novas movimentações por que a conta está encerrada!"));
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO,
+					"Não é possivel cadastrar novas movimentações por que a conta está encerrada!"));
 			return modelAndView;
 		}
 
@@ -301,10 +315,12 @@ public class AdminController {
 
 			wrapper.getConta().adicionarMovimentacao(wrapper.getMovimentacao());
 			contaDespesaDao.mesclar(wrapper.getConta());
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Conta cadastrada com sucesso"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "Conta cadastrada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não foi possivel realizar o cadastro da movimentação"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não foi possivel realizar o cadastro da movimentação"));
 			return modelAndView;
 		}
 
@@ -321,15 +337,15 @@ public class AdminController {
 	 */
 	@RequestMapping(value = "movimentacao/editar", method = RequestMethod.POST)
 	public ModelAndView editarMovimentacao(EdicaoMovimentacaoWrapper wrapper, RedirectAttributes redirectAttributes) {
-		
+
 		ModelAndView modelAndView = new ModelAndView("redirect:./../contas/" + wrapper.getContaId());
 
 		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
 		// não permite edição de movimentações conciliadas
 		if (movimentacaoAntiga.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel editar uma"
-					+ " movimentação conciliada"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ALERTA, "Não é possivel editar uma" + " movimentação conciliada"));
 			return modelAndView;
 		}
 
@@ -350,10 +366,12 @@ public class AdminController {
 			novaMovimentacao.setCategoria(wrapper.getMovimentacao().getCategoria());
 
 			movimentacaoDao.mesclar(novaMovimentacao);
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Movimentação editada com sucesso"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "Movimentação editada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não é possivel editar a movimentação"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não é possivel editar a movimentação"));
 			return modelAndView;
 		}
 
@@ -377,26 +395,27 @@ public class AdminController {
 
 		// não permite exclusão de movimentações em contas inativas
 		if (conta.getSituacao() == SituacaoConta.INATIVA) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel excluir "
-					+ "movimentações de uma conta inativa"));
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
+					"Não é possivel excluir " + "movimentações de uma conta inativa"));
 			return modelAndView;
 		}
 
 		// não permite exclusão de movimentações conciliadas
 		if (movimentacao.getConciliada() == EstadoConciliacao.CONCILIADA) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, "Não é possivel excluir"
-					+ " uma movimentação conciliada"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ALERTA, "Não é possivel excluir" + " uma movimentação conciliada"));
 			return modelAndView;
 		}
 
 		try {
 			conta.removerMovimentacao(movimentacao);
 			contaDespesaDao.mesclar(conta);
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "movimentação excluida com sucesso"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "movimentação excluida com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO,
-					"Não é possivel excluir movimentações de uma conta excluida"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não é possivel excluir movimentações de uma conta excluida"));
 			return modelAndView;
 		}
 	}
@@ -408,7 +427,7 @@ public class AdminController {
 
 		// não permite encerramento caso alguma movimentação não esteja conciliada
 		if (!conta.getMovimentacoesEstaoConciliadas()) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA, 
+			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
 					"Não é possivel fechar uma conta que não possua todas as suas movimentações conciliadas"));
 			return new ModelAndView("redirect:./../" + conta.getId());
 		}
@@ -432,7 +451,6 @@ public class AdminController {
 	public ModelAndView encerrarConta(EncerramentoContaWrapper wrapper, RedirectAttributes redirectAttributes) {
 		ModelAndView modelAndView = new ModelAndView("redirect:../.");
 
-		
 		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId());
 
 		// não permite encerramento caso alguma movimentação não esteja conciliada
@@ -464,12 +482,72 @@ public class AdminController {
 			conta.setDataFim(Calendar.getInstance());
 			conta.setSituacao(SituacaoConta.INATIVA);
 			contaDespesaDao.mesclar(conta);
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.SUCESSO, "Conta encerrada com sucesso"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.SUCESSO, "Conta encerrada com sucesso"));
 			return modelAndView;
 		} catch (RuntimeException e) {
-			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ERRO, "Não foi possivel fechar a conta"));
+			redirectAttributes.addFlashAttribute("status",
+					new StatusInfo(StatusType.ERRO, "Não foi possivel fechar a conta"));
 			return modelAndView;
 		}
+	}
+
+	@RequestMapping("gerar-relatorio-geral")
+	public ModelAndView gerarRelatorioGeral( EdicaoMovimentacaoWrapper wrapper,HttpServletRequest request, HttpServletResponse response,
+			@AuthenticationPrincipal Usuario usuarioLogado)
+			throws JRException, IOException {
+		
+		System.out.println(wrapper.getContaId());
+		
+		ContaDespesa conta = contaDespesaDao.buscarContaPeloId(Integer.valueOf(wrapper.getContaId()));
+
+		List<Map<String, ?>> datasource = new ArrayList<Map<String, ?>>();
+
+		Map<String, Object> infoConta = new HashMap<String, Object>();
+
+		infoConta.put("colaborador", conta.getUsuario().getNome());
+		infoConta.put("cliente", conta.getCliente().getNome());
+		infoConta.put("data_inicio", conta.getDataInicio());
+		infoConta.put("data_fim", conta.getDataFim());
+		infoConta.put("situacao", conta.getSituacao().name());
+		infoConta.put("criado_por", usuarioLogado.getNome());
+
+		datasource.add(infoConta);
+		
+		for(Movimentacao m : conta.getMovimentacoes()) {
+			Map<String, Object> movimentacao = new HashMap<String, Object>();
+			
+			movimentacao.put("tipo", m.getTipo().name());
+			movimentacao.put("valor", m.getValor());
+			movimentacao.put("descricao", m.getDescricao());
+			movimentacao.put("conciliada", m.getConciliada() == EstadoConciliacao.CONCILIADA ? "SIM": "NÃO");
+			movimentacao.put("responsavel", m.getCategoria().name());
+			
+			datasource.add(movimentacao);
+		}
+		
+		JRBeanCollectionDataSource jrDataSource = new JRBeanCollectionDataSource(datasource);
+
+		String pathParaRelatorio = request.getServletContext().getRealPath("/resources/relatorio/relatorio-conta.jasper");
+
+		Map<String, Object> parametros = new HashMap<String, Object>();
+
+		JasperPrint jasperPrint = JasperFillManager.fillReport(pathParaRelatorio, null, jrDataSource);
+
+		String nomeDoArquivo = "Relatorio " + conta.getCliente().getNome() + " - " + conta.getUsuario().getNome()
+				+ ".pdf";
+
+		response.setContentType("application/x-pdf");
+		response.setHeader("Content-disposition", "inline; filename=" + nomeDoArquivo);
+		
+		OutputStream outStream = response.getOutputStream();
+		JasperExportManager.exportReportToPdfStream(jasperPrint, outStream);
+		
+		outStream.flush();
+		outStream.close();
+		
+		
+		return new ModelAndView("redirect: contas/"+conta.getId());
 	}
 
 	/**
