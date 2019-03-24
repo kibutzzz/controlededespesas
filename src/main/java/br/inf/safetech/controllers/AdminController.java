@@ -522,6 +522,9 @@ public class AdminController {
 			movimentacao.put("descricao", m.getDescricao());
 			movimentacao.put("conciliada", m.getConciliada() == EstadoConciliacao.CONCILIADA ? "SIM": "NÃO");
 			movimentacao.put("responsavel", m.getCategoria().name());
+			movimentacao.put("usuario", "USUARIO");
+			movimentacao.put("responsavel", m.getCategoria().name());
+			
 			
 			datasource.add(movimentacao);
 		}
@@ -547,7 +550,7 @@ public class AdminController {
 		outStream.close();
 		
 		
-		return new ModelAndView("redirect: contas/"+conta.getId());
+		return detalheConta(conta.getId());
 	}
 
 	/**
