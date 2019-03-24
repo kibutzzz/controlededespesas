@@ -23,7 +23,7 @@
 				</select>
 			</div>
 			<div class="col-12 col-md-6 ">
-				<label>CLiente</label> <select id="cliente" name="cliente.id"
+				<label>Cliente</label> <select id="cliente" name="cliente.id"
 					class="form-control">
 					<option disabled selected value="0">selecione</option>
 
