@@ -36,7 +36,7 @@
 				<button type="submit" class="btn btn-block btn-warning"
 					<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
 											|| movimentacao.cadastradoPor == 'ADMIN'
-											|| conta.situacao == 'INATIVA'}">disabled</c:if>>Editar</button>
+											|| conta.situacao == 'ENCERRADA'}">disabled</c:if>>Editar</button>
 			</div>
 
 			<input type="hidden" name="contaId" value="${conta.id }" />
@@ -52,7 +52,7 @@
 				<button class="btn btn-danger btn-block"
 					<c:if test="${movimentacao.conciliada == 'CONCILIADA' 
 													|| movimentacao.cadastradoPor == 'ADMIN' 
-													|| conta.situacao == 'INATIVA'}">disabled</c:if>
+													|| conta.situacao == 'ENCERRADA'}">disabled</c:if>
 					type="submit">Excluir</button>
 			</div>
 
