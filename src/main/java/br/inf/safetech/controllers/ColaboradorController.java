@@ -97,14 +97,15 @@ public class ColaboradorController {
 	 * @return redireciona para a pagina de detalhes da conta atual
 	 */
 	@RequestMapping("movimentacao")
-	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper) {
+	public ModelAndView cadastrarMovimentacao(CadastroMovimentacaoWrapper wrapper, @AuthenticationPrincipal Usuario colaboradorLogado) {
 
 //		TODO validar os dados da movimentação
 		wrapper.setConta(contaDespesaDao.buscarContaPeloId(wrapper.getConta().getId()));
 
 		wrapper.getMovimentacao().setTipo(TipoMovimentacao.DEBITO);
 		wrapper.getMovimentacao().setConciliada(EstadoConciliacao.NAO_CONCILIADA);
-		wrapper.getMovimentacao().setCadastradoPor(TipoUsuario.COLABORADOR);
+		wrapper.getMovimentacao().setCadastradoPor(colaboradorLogado);
+		wrapper.getMovimentacao().setCategoria(CategoriaMovimentacao.INDEFINIDO);
 
 		movimentacaoDao.gravar(wrapper.getMovimentacao());
 
@@ -128,7 +129,7 @@ public class ColaboradorController {
 		Movimentacao movimentacaoAntiga = movimentacaoDao.buscarMovimentacaoPorId(wrapper.getMovimentacao().getId());
 
 		// não permite editar movimentações cadastradas por um admin
-		if (movimentacaoAntiga.getCadastradoPor() == TipoUsuario.ADMIN) {
+		if (movimentacaoAntiga.getCadastradoPor().getTipo() == TipoUsuario.ADMIN) {
 			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
 					"Não é possivel editar uma movimentação cadastrada por um administrador"));
 			return modelAndView;
@@ -187,13 +188,13 @@ public class ColaboradorController {
 			return modelAndView;
 		}
 
-		if (movimentacao.getCadastradoPor() == TipoUsuario.ADMIN) {
+		if (movimentacao.getCadastradoPor().getTipo() == TipoUsuario.ADMIN) {
 			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
 					"Não é possivel excluir uma movimentação cadastrada por um administrador"));
 			return modelAndView;
 		}
 
-		if (conta.getSituacao() == SituacaoConta.INATIVA) {
+		if (conta.getSituacao() == SituacaoConta.ENCERRADA) {
 			redirectAttributes.addFlashAttribute("status", new StatusInfo(StatusType.ALERTA,
 					"Não é possivel excluir uma movimentação de uma conta encerrada"));
 			return modelAndView;
