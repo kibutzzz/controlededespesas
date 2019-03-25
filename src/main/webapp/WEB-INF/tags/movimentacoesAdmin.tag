@@ -63,9 +63,7 @@
 			<input type="hidden" name="contaId" value="${conta.id }" />
 
 			<div class="col-sm-12 col-lg-1 p-0 ">
-				<button class="btn btn-block btn-warning"
-					<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
-					type="submit">
+				<button class="btn btn-block btn-warning" type="submit">
 					<span class="oi oi-pencil"></span>
 				</button>
 			</div>
@@ -76,9 +74,7 @@
 			<input type="hidden" name="movimentacao.id"
 				value="${movimentacao.id }">
 			<div class="col-sm-12   p-0 ">
-				<button class="btn btn-danger btn-block"
-					<c:if test="${movimentacao.conciliada == 'CONCILIADA' }">disabled</c:if>
-					type="submit">
+				<button class="btn btn-danger btn-block" type="submit">
 					<span class="oi oi-trash"></span>
 				</button>
 
@@ -90,18 +86,20 @@
 
 
 <div class="row mt-2">
+	<c:if test="${conta.situacao == 'ATIVA' }">
+		<div class="col-12 col-lg-3 mr-auto">
 
-	<div class="col-12 col-lg-3 mr-auto">
-		<form:form cssClass=""
-			action="${s:mvcUrl('AC#confirmarEncerramento').build() }">
-			<input type="hidden" name="id" value="${conta.id }">
-			<c:if test="${conta.situacao == 'ATIVA' }">
+			<form:form cssClass=""
+				action="${s:mvcUrl('AC#confirmarEncerramento').build() }">
+				<input type="hidden" name="id" value="${conta.id }">
+
 				<button class="btn btn-block btn-danger"
 					<c:if test="${not conta.movimentacoesEstaoConciliadas }">disabled</c:if>>Encerrar
 					conta</button>
-			</c:if>
-		</form:form>
-	</div>
+
+			</form:form>
+		</div>
+	</c:if>
 	<div
 		class="col-12 col-lg-3 form-control font-weight-bold d-flex justify-content-between">
 		<div>Total:</div>
