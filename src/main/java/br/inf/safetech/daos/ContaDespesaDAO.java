@@ -132,7 +132,7 @@ public class ContaDespesaDAO {
 	public List<ContaDespesa> buscarUltimasContasAbertas() {
 		return manager.createQuery(
 				"select distinct(c) from ContaDespesa c where c.situacao = :pSituacao order by c.dataInicio", ContaDespesa.class)
-				.setParameter("pSituacao", SituacaoConta.ATIVA).setMaxResults(4).getResultList();
+				.setParameter("pSituacao", SituacaoConta.ATIVA).getResultList();
 	}
 
 	
