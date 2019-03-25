@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 @Entity
@@ -21,13 +22,17 @@ public class Movimentacao {
 	private BigDecimal valor;
 	private String descricao;
 	private CategoriaMovimentacao categoria;
-	private TipoUsuario cadastradoPor;
+	
+	@ManyToOne
+	private Usuario cadastradoPor;
 
-	public TipoUsuario getCadastradoPor() {
+	
+	
+	public Usuario getCadastradoPor() {
 		return cadastradoPor;
 	}
 
-	public void setCadastradoPor(TipoUsuario cadastradoPor) {
+	public void setCadastradoPor(Usuario cadastradoPor) {
 		this.cadastradoPor = cadastradoPor;
 	}
 

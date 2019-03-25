@@ -26,6 +26,7 @@ public class ContaDespesa {
 	@SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ_CONTA_DESPESA")
 	private int id;
 
+
 	@ManyToOne
 	private Usuario usuario;
 
@@ -39,8 +40,11 @@ public class ContaDespesa {
 	@DateTimeFormat
 	private Calendar dataFim;
 
-	@OneToMany(fetch=FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Movimentacao> movimentacoes = new ArrayList<Movimentacao>();
+
+	@ManyToOne
+	private Usuario cadastradoPor;
 
 	public int getId() {
 		return id;
@@ -95,6 +99,14 @@ public class ContaDespesa {
 		this.dataFim = dataFim;
 	}
 
+	public Usuario getCadastradoPor() {
+		return cadastradoPor;
+	}
+	
+	public void setCadastradoPor(Usuario cadastradoPor) {
+		this.cadastradoPor = cadastradoPor;
+	}
+
 	public List<Movimentacao> getMovimentacoes() {
 		return movimentacoes;
 	}
@@ -114,8 +126,7 @@ public class ContaDespesa {
 
 	public BigDecimal getSaldoDisponivel() {
 		BigDecimal total = new BigDecimal("0.00");
-		
-		
+
 		for (Movimentacao movimentacao : this.movimentacoes) {
 			if (movimentacao.getTipo() == TipoMovimentacao.CREDITO) {
 				total = total.add(movimentacao.getValor());
