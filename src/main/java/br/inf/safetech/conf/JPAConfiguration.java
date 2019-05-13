@@ -15,9 +15,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class JPAConfiguration {
 
-	private static final String USERNAME = "leonardo";
-	private static final String PASSWORD = "password";
-	private static final String URL = "jdbc:oracle:thin:@localhost:1521:xe";
+	private static final String USERNAME = "leonardotmp";
+	private static final String PASSWORD = "safetech";
+	private static final String HOST = "172.20.1.40";
+	private static final String PORT = "1521";
+	private static final String SERVICE_NAME = "tsft";
+	private static final String URL = "jdbc:oracle:thin:@" + HOST + ":" + PORT + ":" + SERVICE_NAME;
 	private static final String DRIVER_CLASS_NAME = "oracle.jdbc.OracleDriver";
 
 	@Bean
