@@ -36,7 +36,7 @@ public class JPAConfiguration {
 	private static final String DRIVER_CLASS_NAME = "oracle.jdbc.OracleDriver";
 
 	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws IOException {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory()  {
 		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 
 		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -44,7 +44,7 @@ public class JPAConfiguration {
 
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		
-			
+	
 		
 		url = "jdbc:oracle:thin:@" + host + ":" + port + ":" + serviceName;
 		System.out.println(url);

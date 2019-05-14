@@ -49,7 +49,10 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() throws IOException {
 		PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-		Resource resource = new UrlResource("file:C:\\Apache Software Foundation\\apache-tomcat-9.0.19\\webapps\\conf\\controlededespesas-config.properties");
+		System.out.println("\n\n\n" + System.getProperty("user.home")+" \n\n\n");
+		Resource resource = new UrlResource("file:"+System.getProperty("user.home")+ "/.controlededespesas/datasource.properties");
+		
+		
 		Properties properties = PropertiesLoaderUtils.loadProperties(resource);
 		
 		pspc.setProperties(properties);
